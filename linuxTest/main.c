@@ -14,7 +14,7 @@
 
 #include "displayPbm.h"
 
-#define IMAGE_PATH ("sample.bmp")
+#define IMAGE_PATH ("sample.pbm")
 
 int main(int argc, char const *argv[])
 {

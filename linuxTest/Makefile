@@ -66,8 +66,8 @@ $(BUILD_DIR)/%.o: %.c
 $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(C_LIBS)
 
-run: 
-	@echo $(C_SOURCES) $(CFLAGS)
+run: $(BUILD_DIR)/$(TARGET)
+	$(BUILD_DIR)/$(TARGET)
 
 clean:
 	rm -rf $(BUILD_DIR)
