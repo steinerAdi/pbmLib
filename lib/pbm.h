@@ -17,11 +17,11 @@ extern "C"
 {
 #endif
 
-#include <stdint.h>
+// #ifdef PBM_USE_IO
+// #include "pbmIO/displayPbm.h"
+// #endif
 
-#ifdef USE_DISPLAY
-#include "pbmIO/displayPbm.h"
-#endif
+#include <stdint.h>
 
     typedef struct
     {

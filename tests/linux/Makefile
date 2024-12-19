@@ -43,7 +43,8 @@ C_DEFS =
 
 # C Includes
 C_INC = \
--I$(LIB_PATH) 
+-I$(LIB_PATH) \
+-I$(IO_PATH)
 
 #C Libs
 C_LIBS = $$(sdl-config --cflags --libs)

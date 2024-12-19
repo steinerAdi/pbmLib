@@ -9,19 +9,18 @@
  *
  */
 
-#define USE_DISPLAY
+#define PBM_USE_IO
 
 #include "SDL/SDL.h"
 #include <stdlib.h>
 
 #include "pbm.h"
-
+#include "displayPbm.h"
 
 #define IMAGE_PATH ("sample.pbm")
 
 int main(int argc, char const *argv[])
 {
-
   const char *filePath;
   if (argc > 1)
   {
@@ -55,7 +54,7 @@ int main(int argc, char const *argv[])
 
   SDL_Event event;
 
-  pbm_display(screen, &imageHandler);
+  pbm_display(screen, (const pbm_Image *) &imageHandler);
   // displayPBM_displayWindow(screen, IMAGE_PATH);
 
   // Auf Events warten
@@ -64,6 +63,7 @@ int main(int argc, char const *argv[])
     switch (event.type)
     {
     case SDL_QUIT:
+      pbm_save("saved.pbm", (const pbm_Image *) &imageHandler);
       free(imageHandler.data);
       puts("Leave window. Bye Bye");
       return EXIT_SUCCESS;

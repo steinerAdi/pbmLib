@@ -13,13 +13,13 @@
 
 SDL_Surface *loadBMP(const char *file_name);
 
-int pbm_load(const char *imagePath, pbm_Image *imageHandler)
+PBM_RETURN pbm_load(const char *imagePath, pbm_Image *imageHandler)
 {
     FILE *file = fopen(imagePath, "rb");
     if (file == NULL)
     {
         printf("ERROR, could not load %s\n", imagePath);
-        return EXIT_FAILURE;
+        return PBM_ERROR;
     }
 
     char header[3];
@@ -27,13 +27,13 @@ int pbm_load(const char *imagePath, pbm_Image *imageHandler)
     {
         printf("Invalid file format\n");
         fclose(file);
-        return EXIT_FAILURE;
+        return PBM_ERROR;
     }
     if ('P' != header[0] || '4' != header[1])
     {
         printf("Invalid PBM file format, should be P4 but is %c%c\n", header[0], header[1]);
         fclose(file);
-        return EXIT_FAILURE;
+        return PBM_ERROR;
     }
 
     // Skip comments (lines starting with #)
@@ -49,7 +49,7 @@ int pbm_load(const char *imagePath, pbm_Image *imageHandler)
     {
         printf("Error reading image size\n");
         fclose(file);
-        return EXIT_FAILURE;
+        return PBM_ERROR;
     }
 
     // Skip the maximum grayscale value
@@ -63,20 +63,46 @@ int pbm_load(const char *imagePath, pbm_Image *imageHandler)
     {
         printf("Error allocating memory for image data\n");
         fclose(file);
-        return EXIT_FAILURE;
+        return PBM_ERROR;
     }
 
     fread(data, 1, imageDataSize, file);
     imageHandler->data = data;
     fclose(file);
-    return EXIT_SUCCESS;
+    return PBM_OK;
 }
 
-void pbm_display(SDL_Surface *screen, pbm_Image *image)
+PBM_RETURN pbm_save(const char *imagePath, const pbm_Image *imageHandler){
+    if(NULL == imagePath || NULL == imageHandler || NULL == imageHandler->data){
+        return PBM_ARGUMENTS;
+    }
+
+    FILE *file = fopen(imagePath, "wb");
+    if (file == NULL)
+    {
+        printf("ERROR, could not open %s\n", imagePath);
+        return PBM_ERROR;
+    }
+
+    if(0 == imageHandler->width || 0 == imageHandler->height){
+        return PBM_SIZE;
+    }
+
+    uint32_t imageDataSize = (imageHandler->width * imageHandler->height + 7) / 8;
+
+    fprintf(file, "P4\n");
+    fprintf(file, "%d %d\n", imageHandler->width, imageHandler->height);
+    fwrite(imageHandler->data, 1, imageDataSize, file);
+    fprintf(file, "\n");
+    fclose(file);
+    return PBM_OK;
+}
+
+PBM_RETURN pbm_display(SDL_Surface *screen, const pbm_Image *image)
 {
     if (NULL == screen || NULL == image)
     {
-        return;
+        return PBM_ARGUMENTS;
     }
 
     SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255)); // White background
@@ -99,6 +125,7 @@ void pbm_display(SDL_Surface *screen, pbm_Image *image)
     }
 
     SDL_Flip(screen);
+    return PBM_OK;
 }
 
 SDL_Surface *loadBMP(const char *file_name)

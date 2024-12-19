@@ -21,9 +21,11 @@ extern "C" {
 
 #include "../pbm.h"
 
-int pbm_load(const char *imagePath, pbm_Image *imageHandler);
+PBM_RETURN pbm_load(const char *imagePath, pbm_Image *imageHandler);
 
-void pbm_display(SDL_Surface *screen, pbm_Image *image);
+PBM_RETURN pbm_save(const char *imagePath, const pbm_Image *imageHandler);
+
+PBM_RETURN pbm_display(SDL_Surface *screen, const pbm_Image *image);
 
 #ifdef __cplusplus
 }
