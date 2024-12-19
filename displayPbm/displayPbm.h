@@ -17,16 +17,17 @@ extern "C" {
 #endif
 
 #include "SDL/SDL.h"
+#include <stdint.h>
 
 typedef struct {
-    int width;
-    int height;
-    unsigned char *data; // Die Bilddaten (ein Byte pro Pixel)
+    uint32_t width;
+    uint32_t height;
+    uint8_t *data; // Die Bilddaten (ein Byte pro Pixel)
 } pbm_Image;
 
-pbm_Image pbm_load(const char *imagePath);
+int pbm_load(const char *imagePath, pbm_Image *imageHandler);
 
-void pbm_display(SDL_Surface *screen, char * filename);
+void pbm_display(SDL_Surface *screen, pbm_Image *image);
 
 #ifdef __cplusplus
 }
