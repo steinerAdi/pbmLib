@@ -17,7 +17,7 @@ OPT = -Og
 # Build path
 BUILD_DIR = build
 #Library Path
-LIB_PATH = ../displayPbm
+LIB_PATH = ../../lib/pbmIO
 
 ######################################
 # source
