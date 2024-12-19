@@ -17,7 +17,8 @@ OPT = -Og
 # Build path
 BUILD_DIR = build
 #Library Path
-LIB_PATH = ../../lib/pbmIO
+LIB_PATH = ../../lib
+IO_PATH = $(LIB_PATH)/pbmIO
 
 ######################################
 # source
@@ -26,6 +27,7 @@ LIB_PATH = ../../lib/pbmIO
 C_SOURCES =  \
 $(wildcard *.c) \
 $(wildcard $(LIB_PATH)/*.c) \
+$(wildcard $(IO_PATH)/*.c) \
 
 ######################################
 # Compiler

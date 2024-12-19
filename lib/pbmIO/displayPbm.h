@@ -19,11 +19,7 @@ extern "C" {
 #include "SDL/SDL.h"
 #include <stdint.h>
 
-typedef struct {
-    uint32_t width;
-    uint32_t height;
-    uint8_t *data; // Die Bilddaten (ein Byte pro Pixel)
-} pbm_Image;
+#include "../pbm.h"
 
 int pbm_load(const char *imagePath, pbm_Image *imageHandler);
 

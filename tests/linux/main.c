@@ -9,10 +9,13 @@
  *
  */
 
+#define USE_DISPLAY
+
 #include "SDL/SDL.h"
 #include <stdlib.h>
 
-#include "displayPbm.h"
+#include "pbm.h"
+
 
 #define IMAGE_PATH ("sample.pbm")
 
