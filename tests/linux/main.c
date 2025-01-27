@@ -14,56 +14,55 @@
 #include "SDL/SDL.h"
 #include <stdlib.h>
 
-#include "pbm.h"
 #include "displayPbm.h"
+#include "pbm.h"
+#include "pbmGraphics.h"
 
 #define IMAGE_PATH ("sample.pbm")
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
   const char *filePath;
-  if (argc > 1)
-  {
+  if (argc > 1) {
     filePath = argv[1];
-  }
-  else
-  {
+  } else {
     filePath = IMAGE_PATH;
   }
 
-  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER))
-  {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER)) {
     // Error in process
     printf("Cannot initialise SDL: %s\n", SDL_GetError());
     return EXIT_FAILURE;
   }
   atexit(SDL_Quit);
 
-  pbm_Image imageHandler;
-  if (pbm_load(filePath, &imageHandler))
-  {
+  pbm_image imageHandler;
+  if (pbm_loadImage(filePath, &imageHandler)) {
     return EXIT_FAILURE;
   }
 
   SDL_Surface *screen = SDL_SetVideoMode(imageHandler.width, imageHandler.height, 32, SDL_SWSURFACE);
-  if (!screen)
-  {
+  if (!screen) {
     printf("Cannot set video mode: %s\n", SDL_GetError());
     return EXIT_FAILURE;
   }
 
   SDL_Event event;
+  pbm_fill(&imageHandler, PBM_WHITE);
+  for (uint32_t x = 0; x < 20; x++) {
+    // for (uint32_t y = 0; y < 20; y++) {
+    pbm_setPixel(&imageHandler, x, 10, PBM_BLACK);
+    // }
+  }
 
-  pbm_display(screen, (const pbm_Image *) &imageHandler);
+  // pbm_drawLine(&imageHandler, 0, 0, imageHandler.width, imageHandler.height, PBM_BLACK);
+  pbm_displayImage(screen, (const pbm_image *)&imageHandler);
   // displayPBM_displayWindow(screen, IMAGE_PATH);
 
   // Auf Events warten
-  while (SDL_WaitEvent(&event))
-  {
-    switch (event.type)
-    {
+  while (SDL_WaitEvent(&event)) {
+    switch (event.type) {
     case SDL_QUIT:
-      pbm_save("saved.pbm", (const pbm_Image *) &imageHandler);
+      pbm_saveImage("saved.pbm", (const pbm_image *)&imageHandler);
       free(imageHandler.data);
       puts("Leave window. Bye Bye");
       return EXIT_SUCCESS;

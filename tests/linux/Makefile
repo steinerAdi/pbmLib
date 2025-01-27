@@ -19,6 +19,8 @@ BUILD_DIR = build
 #Library Path
 LIB_PATH = ../../lib
 IO_PATH = $(LIB_PATH)/pbmIO
+GRAPHICS_PATH = $(LIB_PATH)/pbmGraphic
+
 
 ######################################
 # source
@@ -28,6 +30,7 @@ C_SOURCES =  \
 $(wildcard *.c) \
 $(wildcard $(LIB_PATH)/*.c) \
 $(wildcard $(IO_PATH)/*.c) \
+$(wildcard $(GRAPHICS_PATH)/*.c) \
 
 ######################################
 # Compiler
@@ -44,7 +47,8 @@ C_DEFS =
 # C Includes
 C_INC = \
 -I$(LIB_PATH) \
--I$(IO_PATH)
+-I$(IO_PATH) \
+-I$(GRAPHICS_PATH)
 
 #C Libs
 C_LIBS = $$(sdl-config --cflags --libs)

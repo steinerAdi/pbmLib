@@ -1,12 +1,12 @@
 /**
  * @file displayPbm.h
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief 
+ * @brief
  * @version 0.1
  * @date 18-12-2024
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #ifndef DISPLAY_PBM_H
@@ -21,11 +21,11 @@ extern "C" {
 
 #include "../pbm.h"
 
-PBM_RETURN pbm_load(const char *imagePath, pbm_Image *imageHandler);
+pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler);
 
-PBM_RETURN pbm_save(const char *imagePath, const pbm_Image *imageHandler);
+pbm_return pbm_saveImage(const char *imagePath, const pbm_image *imageHandler);
 
-PBM_RETURN pbm_display(SDL_Surface *screen, const pbm_Image *image);
+pbm_return pbm_displayImage(SDL_Surface *screen, const pbm_image *image);
 
 #ifdef __cplusplus
 }
