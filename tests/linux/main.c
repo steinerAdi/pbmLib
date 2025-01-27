@@ -48,9 +48,8 @@ int main(int argc, char const *argv[]) {
 
   SDL_Event event;
   pbm_fill(&imageHandler, PBM_BLACK);
-  for (uint32_t x = 0; x < imageHandler.width; x++) {
-    pbm_setPixel(&imageHandler, x, x, PBM_WHITE);
-  }
+  pbm_drawLine(&imageHandler, 0, 0, imageHandler.width - 1, imageHandler.height - 1, PBM_WHITE);
+  pbm_drawLine(&imageHandler, 0, imageHandler.height, imageHandler.width, 0, PBM_WHITE);
 
   // pbm_drawLine(&imageHandler, 0, 0, imageHandler.width, imageHandler.height, PBM_BLACK);
   pbm_displayImage(screen, (const pbm_image *)&imageHandler);

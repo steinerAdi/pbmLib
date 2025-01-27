@@ -11,6 +11,7 @@
 
 #include "pbmGraphics.h"
 #include <stddef.h>
+#include <stdlib.h>
 
 pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
   if (NULL == imageHandler) {
@@ -34,7 +35,6 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   uint32_t width = x / 8;
   uint8_t pattern = 0x80 >> (x % 8);
   uint32_t bytePosition = y * imageHandler->width / 8 + width;
-  printf("Pattern: %d, position: %d\n", pattern, bytePosition);
   if (color) {
     imageHandler->data[bytePosition] |= pattern;
   } else {
@@ -48,4 +48,35 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
 pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, const char *msg);
 
 pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
-                        pbm_colors color);
+                        pbm_colors color) {
+  if (NULL == imageHandler || xStart > imageHandler->width || xEnd > imageHandler->width ||
+      yStart > imageHandler->height || yEnd > imageHandler->height) {
+    return PBM_ARGUMENTS;
+  }
+  int32_t xDiff = xEnd - xStart;
+  int32_t yDiff = yEnd - yStart;
+  uint32_t interpolationDuration;
+  double xInterpolation;
+  double yInterpolation;
+  if (abs(xDiff) > abs(yDiff)) {
+    interpolationDuration = abs(xDiff);
+    if (xDiff > 0) {
+      xInterpolation = 1;
+    } else {
+      xInterpolation = -1;
+    }
+    yInterpolation = (double)yDiff / abs(xDiff);
+  } else {
+    interpolationDuration = abs(yDiff);
+    xInterpolation = (double)xDiff / abs(yDiff);
+    if (yDiff > 0) {
+      yInterpolation = 1;
+    } else {
+      yInterpolation = -1;
+    }
+  }
+  for (uint32_t i = 0; i < interpolationDuration; i++) {
+    pbm_setPixel(imageHandler, xStart + xInterpolation * i, yStart + yInterpolation * i, color);
+  }
+  return PBM_OK;
+}
