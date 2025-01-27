@@ -31,12 +31,14 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   if (imageHandler == NULL || x > imageHandler->width || y > imageHandler->height) {
     return PBM_ARGUMENTS;
   }
-  uint32_t height = y / 8;
-  uint8_t pattern = 1 << (y % 8);
+  uint32_t width = x / 8;
+  uint8_t pattern = 0x80 >> (x % 8);
+  uint32_t bytePosition = y * imageHandler->width / 8 + width;
+  printf("Pattern: %d, position: %d\n", pattern, bytePosition);
   if (color) {
-    imageHandler->data[height * imageHandler->width + x] |= pattern;
+    imageHandler->data[bytePosition] |= pattern;
   } else {
-    imageHandler->data[height * imageHandler->width + x] &= ~pattern;
+    imageHandler->data[bytePosition] &= ~pattern;
   }
   return PBM_OK;
 }
