@@ -47,10 +47,10 @@ int main(int argc, char const *argv[]) {
   }
 
   SDL_Event event;
-  pbm_fill(&imageHandler, PBM_WHITE);
+  pbm_fill(&imageHandler, PBM_BLACK);
   for (uint32_t x = 0; x < 20; x++) {
     // for (uint32_t y = 0; y < 20; y++) {
-    pbm_setPixel(&imageHandler, x, 10, PBM_BLACK);
+    pbm_setPixel(&imageHandler, x, 10, PBM_WHITE);
     // }
   }
 

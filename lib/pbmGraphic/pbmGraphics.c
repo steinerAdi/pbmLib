@@ -32,7 +32,12 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
     return PBM_ARGUMENTS;
   }
   uint32_t height = y / 8;
-  imageHandler->data[height * imageHandler->width + x] |= (uint8_t)color << (y % 8);
+  uint8_t pattern = 1 << (y % 8);
+  if (color) {
+    imageHandler->data[height * imageHandler->width + x] |= pattern;
+  } else {
+    imageHandler->data[height * imageHandler->width + x] &= ~pattern;
+  }
   return PBM_OK;
 }
 
