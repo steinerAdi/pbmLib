@@ -54,11 +54,11 @@ int main(int argc, char const *argv[]) {
   pbm_drawLine(&imageHandler, 0, imageHandler.height, imageHandler.width, 0, PBM_BLACK);
 
   pbm_font font6x8 = {.alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height = 8};
-  uint32_t yPos = 0;
-  for (char i = ' '; i < 'z'; i++) {
-    pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
-    yPos += 8;
-  }
+  // for (char i = ' '; i < 'z'; i++) {
+  //   pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
+  //   yPos += 8;
+  // }
+  pbm_writeString(&imageHandler, 4 * 8, 2 * 8, PBM_BLACK, &font6x8, "Hallo Welt");
 
   // pbm_drawLine(&imageHandler, 0, 0, imageHandler.width, imageHandler.height, PBM_BLACK);
   pbm_displayImage(screen, (const pbm_image *)&imageHandler);

@@ -107,16 +107,19 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
   for (uint32_t i = 0; i < font->height; i++) {
     imageHandler->data[startBytePosition + imageHandler->width / 8 * i] = font->fontData[startFontIndex + i];
   }
-
-  // for (x i = 0; i < count; i++) {
-  //   /* code */
-  // }
-
-  //
   return PBM_OK;
 }
 
 pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
                            const char *msg) {
+  if (NULL == imageHandler || NULL == font || NULL == msg) {
+    return PBM_ARGUMENTS;
+  }
+  uint32_t currentX = x;
+  while (*msg != '\0') {
+    pbm_writeChar(imageHandler, currentX, y, color, font, *msg++);
+    currentX += 8;
+  }
+
   return PBM_OK;
 }
