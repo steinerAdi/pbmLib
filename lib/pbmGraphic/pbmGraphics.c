@@ -103,9 +103,9 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
   // Set the correct size
   uint32_t startBytePosition = (y * imageHandler->width + x) / 8;
 
+  uint32_t startFontIndex = (uint32_t)character * font->height;
   for (uint32_t i = 0; i < font->height; i++) {
-    // imageHandler->data[startBytePosition + imageHandler->width / 8 * i] = font->font[(uint8_t)character][i];
-    printf("%x\n", font->font[character][i]);
+    imageHandler->data[startBytePosition + imageHandler->width / 8 * i] = font->fontData[startFontIndex + i];
   }
 
   // for (x i = 0; i < count; i++) {
