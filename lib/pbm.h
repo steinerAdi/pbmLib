@@ -18,11 +18,10 @@ extern "C" {
 
 #include <stdint.h>
 
-typedef struct {
-  uint32_t width;  ///< width of the image
-  uint32_t height; ///< height of the image
-  uint8_t *data;   ///< Image buffer data with min size of (width*height+7)/8
-} pbm_image;
+typedef enum {
+  PBM_DATA_HORIZONTAL_MSB = 0, ///< Data bytes are stored in horizontal direction (x direction) with MSB first
+  PBM_DATA_VERTICAL_LSB        ///< Data bytes are stored in vertical direction (y direction) with LSB first
+} pbm_data_alignment;
 
 typedef enum {
   PBM_WHITE = 0, ///< White color index
@@ -35,6 +34,13 @@ typedef enum {
   PBM_ARGUMENTS, ///< Function argument error
   PBM_SIZE       ///< Size out of range
 } pbm_return;
+
+typedef struct {
+  uint32_t width;               ///< width of the image
+  uint32_t height;              ///< height of the image
+  pbm_data_alignment alignment; ///< Data bytes alignment
+  uint8_t *data;                ///< Image buffer data with min size of (width*height+7)/8
+} pbm_image;
 
 #ifdef __cplusplus
 }

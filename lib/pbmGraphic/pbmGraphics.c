@@ -18,7 +18,7 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
     return PBM_ARGUMENTS;
   }
 
-  uint32_t imageDataSize = (imageHandler->width * imageHandler->height + 7) / 8;
+  uint32_t imageDataSize = (imageHandler->width * imageHandler->height) / 8;
 
   uint8_t fillValue = UINT8_MAX * (uint8_t)color;
 
@@ -32,9 +32,24 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   if (imageHandler == NULL || x > imageHandler->width || y > imageHandler->height) {
     return PBM_ARGUMENTS;
   }
-  uint32_t width = x / 8;
-  uint8_t pattern = 0x80 >> (x % 8);
-  uint32_t bytePosition = y * imageHandler->width / 8 + width;
+  uint8_t pattern;
+  uint32_t bytePosition;
+
+  switch (imageHandler->alignment) {
+  case PBM_DATA_HORIZONTAL_MSB:
+    uint32_t width = x / 8;
+    pattern = 0x80 >> (x % 8);
+    bytePosition = y * imageHandler->width / 8 + width;
+    break;
+  case PBM_DATA_VERTICAL_LSB:
+    uint32_t height = y / 8;
+    pattern = (y % 8);
+    bytePosition = height * imageHandler->width / 8 + x;
+    break;
+  default:
+    return PBM_ERROR;
+  }
+
   if (color) {
     imageHandler->data[bytePosition] |= pattern;
   } else {

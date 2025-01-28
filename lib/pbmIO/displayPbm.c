@@ -62,6 +62,7 @@ pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler) {
 
   fread(data, 1, imageDataSize, file);
   imageHandler->data = data;
+  imageHandler->alignment = PBM_DATA_HORIZONTAL_MSB;
   fclose(file);
   return PBM_OK;
 }
