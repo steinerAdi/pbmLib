@@ -37,9 +37,9 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
 
   switch (imageHandler->alignment) {
   case PBM_DATA_HORIZONTAL_MSB:
-    uint32_t width = x / 8;
+    // uint32_t width = x / 8;
     pattern = 0x80 >> (x % 8);
-    bytePosition = y * imageHandler->width / 8 + width;
+    bytePosition = (y * imageHandler->width + x) / 8;
     break;
   case PBM_DATA_VERTICAL_LSB:
     uint32_t height = y / 8;
@@ -57,10 +57,6 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   }
   return PBM_OK;
 }
-
-pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, char character);
-
-pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, const char *msg);
 
 pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
                         pbm_colors color) {
@@ -93,5 +89,34 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   for (uint32_t i = 0; i < interpolationDuration; i++) {
     pbm_setPixel(imageHandler, xStart + xInterpolation * i, yStart + yInterpolation * i, color);
   }
+  return PBM_OK;
+}
+
+pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
+                         char character) {
+  if (NULL == imageHandler || NULL == font) {
+    return PBM_ARGUMENTS;
+  }
+  // Check first the correct alignment
+
+  // Set horizontal alignment
+  // Set the correct size
+  uint32_t startBytePosition = (y * imageHandler->width + x) / 8;
+
+  for (uint32_t i = 0; i < font->height; i++) {
+    // imageHandler->data[startBytePosition + imageHandler->width / 8 * i] = font->font[(uint8_t)character][i];
+    printf("%x\n", font->font[character][i]);
+  }
+
+  // for (x i = 0; i < count; i++) {
+  //   /* code */
+  // }
+
+  //
+  return PBM_OK;
+}
+
+pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
+                           const char *msg) {
   return PBM_OK;
 }

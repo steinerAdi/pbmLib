@@ -18,6 +18,8 @@
 #include "pbm.h"
 #include "pbmGraphics.h"
 
+#include "6x8_horizontal_MSB_1.h"
+
 #define IMAGE_PATH ("sample.pbm")
 
 int main(int argc, char const *argv[]) {
@@ -50,6 +52,12 @@ int main(int argc, char const *argv[]) {
   pbm_fill(&imageHandler, PBM_BLACK);
   pbm_drawLine(&imageHandler, 0, 0, imageHandler.width - 1, imageHandler.height - 1, PBM_WHITE);
   pbm_drawLine(&imageHandler, 0, imageHandler.height, imageHandler.width, 0, PBM_WHITE);
+
+  pbm_font font6x8 = {.alignment = PBM_DATA_HORIZONTAL_MSB, .font = font_6x8H_MSB, .width = 6, .height = 8};
+
+  printf("Start test: ");
+  printf("%02x\n", font_6x8H_MSB[1][0]);
+  // pbm_writeChar(&imageHandler, 5 * 8, 5 * 8, PBM_BLACK, &font6x8, 0x1);
 
   // pbm_drawLine(&imageHandler, 0, 0, imageHandler.width, imageHandler.height, PBM_BLACK);
   pbm_displayImage(screen, (const pbm_image *)&imageHandler);
