@@ -30,14 +30,14 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color);
 
 pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color);
 
-pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
-                        pbm_colors color);
+pbm_return
+pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd, pbm_colors color);
 
-pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
-                         char character);
+pbm_return
+pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, char character);
 
-pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
-                           const char *msg);
+pbm_return
+pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, const char *msg);
 
 #ifdef __cplusplus
 }

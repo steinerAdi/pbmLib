@@ -85,7 +85,9 @@ int main(int argc, char const *argv[]) {
   //   pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
   //   yPos += 8;
   // }
-  pbm_writeString(libImage, 4 * 8, 2 * 8, PBM_BLACK, &font6x8, "Hallo Welt");
+  #define X_POS (12)
+  pbm_writeString(libImage, X_POS, 21, PBM_WHITE, &font6x8, "Hallo Welt");
+  pbm_drawLine(libImage, X_POS, 0, X_POS, 100, PBM_WHITE);
 
   bool running = true;
   SDL_Event event;
@@ -95,8 +97,7 @@ int main(int argc, char const *argv[]) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_QUIT:
-        // pbm_saveImage("saved.pbm", (const pbm_image *)&imageHandler);
-        // free(imageHandler.data);
+        pbm_saveImage("saved.pbm", (const pbm_image *)&imageHandler[IMG_LIB]);
         running = false;
         break;
       case SDL_KEYUP: {
