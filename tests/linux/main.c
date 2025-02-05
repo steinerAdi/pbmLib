@@ -26,6 +26,8 @@
 #define WINDOW_WIDTH (800)
 #define WINDOW_HEIGHT (600)
 
+enum registeredImages { IMG_READ, IMG_LIB, IMG_MAX };
+
 int main(int argc, char const *argv[]) {
   const char *filePath;
   if (argc > 1) {
@@ -34,8 +36,8 @@ int main(int argc, char const *argv[]) {
     filePath = IMAGE_PATH;
   }
 
-  pbm_image imageHandler;
-  if (pbm_loadImage(filePath, &imageHandler)) {
+  pbm_image imageHandler[IMG_MAX];
+  if (pbm_loadImage(filePath, &imageHandler[IMG_READ])) {
     return EXIT_FAILURE;
   }
 
@@ -47,7 +49,12 @@ int main(int argc, char const *argv[]) {
   atexit(SDL_Quit);
 
   SDL_Window *window = SDL_CreateWindow(
-    "Image VIEWER", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, imageHandler.width, imageHandler.height, SDL_WINDOW_SHOWN);
+    "Image VIEWER",
+    SDL_WINDOWPOS_CENTERED,
+    SDL_WINDOWPOS_CENTERED,
+    imageHandler[IMG_READ].width,
+    imageHandler[IMG_READ].height,
+    SDL_WINDOW_SHOWN);
   if (window == NULL) {
     printf("SDL_CreateWindow: %s\n", SDL_GetError());
     SDL_Quit();
@@ -62,25 +69,28 @@ int main(int argc, char const *argv[]) {
     return EXIT_FAILURE;
   }
 
-  // pbm_fill(&imageHandler, PBM_WHITE);
-  // pbm_drawLine(&imageHandler, 0, 0, imageHandler.width - 1, imageHandler.height - 1, PBM_BLACK);
-  // pbm_drawLine(&imageHandler, 0, imageHandler.height, imageHandler.width, 0, PBM_BLACK);
+  imageHandler[IMG_LIB].alignment = imageHandler[IMG_READ].alignment;
+  imageHandler[IMG_LIB].width = imageHandler[IMG_READ].width;
+  imageHandler[IMG_LIB].height = imageHandler[IMG_READ].height;
+  imageHandler[IMG_LIB].data = (uint8_t *)malloc(imageHandler[IMG_LIB].width * imageHandler[IMG_LIB].height / 8);
 
-  // pbm_font font6x8 = {.alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height =
-  // 8};
-  // // for (char i = ' '; i < 'z'; i++) {
-  // //   pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
-  // //   yPos += 8;
-  // // }
-  // pbm_writeString(&imageHandler, 4 * 8, 2 * 8, PBM_BLACK, &font6x8, "Hallo Welt");
+  pbm_image *libImage = &imageHandler[IMG_LIB];
 
-  // // pbm_drawLine(&imageHandler, 0, 0, imageHandler.width, imageHandler.height, PBM_BLACK);
-  // pbm_displayImage(window, (const pbm_image *)&imageHandler);
+  pbm_fill(libImage, PBM_BLACK);
+  pbm_drawLine(libImage, 0, 0, libImage->width - 1, libImage->height - 1, PBM_WHITE);
+  pbm_drawLine(libImage, 0, libImage->height, libImage->width, 0, PBM_WHITE);
 
-  pbm_displayImage(renderer, &imageHandler);
+  pbm_font font6x8 = {.alignment = libImage->alignment, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height = 8};
+  // for (char i = ' '; i < 'z'; i++) {
+  //   pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
+  //   yPos += 8;
+  // }
+  pbm_writeString(libImage, 4 * 8, 2 * 8, PBM_BLACK, &font6x8, "Hallo Welt");
 
   bool running = true;
   SDL_Event event;
+  enum registeredImages currentImage = IMG_LIB;
+  pbm_displayImage(renderer, &imageHandler[currentImage]);
   while (running) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -89,6 +99,16 @@ int main(int argc, char const *argv[]) {
         // free(imageHandler.data);
         running = false;
         break;
+      case SDL_KEYUP: {
+        switch (event.key.keysym.sym) {
+        case SDLK_RIGHT:
+          currentImage = (currentImage + 1) % IMG_MAX;
+          pbm_displayImage(renderer, &imageHandler[currentImage]);
+          break;
+        default:
+          break;
+        }
+      }
       default:
         break;
       }
@@ -98,6 +118,7 @@ int main(int argc, char const *argv[]) {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-  free(imageHandler.data);
+  free(imageHandler[IMG_READ].data);
+  free(imageHandler[IMG_LIB].data);
   return EXIT_SUCCESS;
 }
