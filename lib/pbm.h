@@ -20,6 +20,8 @@ extern "C" {
 
 typedef enum {
   PBM_DATA_HORIZONTAL_MSB = 0, ///< Data bytes are stored in horizontal direction (x direction) with MSB first
+  PBM_DATA_HORIZONTAL_LSB,     ///< Data bytes are stored in horizontal direction (x direction) with LSB
+  PBM_DATA_VERTICAL_MSB,       ///< Data bytes are stored in vertical direction (y direction) with MSB first
   PBM_DATA_VERTICAL_LSB        ///< Data bytes are stored in vertical direction (y direction) with LSB first
 } pbm_data_alignment;
 

@@ -21,6 +21,8 @@
 
 #include "12x20_horizontal_LSB_1.h"
 #include "12x20_horizontal_MSB_1.h"
+#include "32x53_horizontal_MSB_1.h"
+#include "6x8_horizontal_LSB_1.h"
 #include "6x8_horizontal_MSB_1.h"
 
 #define IMAGE_PATH ("sample.pbm")
@@ -77,18 +79,25 @@ int main(int argc, char const *argv[]) {
   pbm_drawLine(libImage, 0, 0, libImage->width - 1, libImage->height - 1, PBM_WHITE);
   pbm_drawLine(libImage, 0, libImage->height, libImage->width, 0, PBM_WHITE);
 
-  pbm_font font6x8 = {.alignment = libImage->alignment, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height = 8};
-  pbm_font font12x20 = {
-      .alignment = libImage->alignment, .fontData = &font_12x20H_MSB[0][0], .width = 12, .height = 20};
+  pbm_font font6x8_lsb = {
+      .alignment = PBM_DATA_HORIZONTAL_LSB, .fontData = &font_6x8H_LSB[0][0], .width = 6, .height = 8};
+  pbm_font font6x8_msb = {
+      .alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height = 8};
+  pbm_font font12x20_lsb = {
+      .alignment = PBM_DATA_HORIZONTAL_LSB, .fontData = &font_12x20H_LSB[0][0], .width = 12, .height = 20};
+  pbm_font font12x20_msb = {
+      .alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_12x20H_MSB[0][0], .width = 12, .height = 20};
+  pbm_font font32x53_msb = {
+      .alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_32x53H_MSB[0][0], .width = 32, .height = 53};
 
-  pbm_font *usedFont = &font6x8;
+  pbm_font *usedFont = &font32x53_msb;
   uint32_t xPos = 40;
   char buffer[100] = {};
   snprintf(buffer, 100, "USED FONT: %u x %u", usedFont->width, usedFont->height);
   pbm_writeString(libImage, xPos, 1, PBM_WHITE, usedFont, buffer);
-  uint32_t yPos = font12x20.height + 1;
-  for (uint16_t i = 0; i <= UINT8_MAX; i++) {
-    printf("Character %d = '%c'\n", i, i);
+  uint32_t yPos = usedFont->height + 1;
+  for (uint16_t i = 0; i <= 255; i++) {
+    // printf("Character %d = '%c'\n", i, i);
     pbm_writeChar(libImage, xPos, yPos, PBM_WHITE, usedFont, (char)i);
     yPos += usedFont->height + 1;
     if ((yPos + usedFont->height) > libImage->height) {
