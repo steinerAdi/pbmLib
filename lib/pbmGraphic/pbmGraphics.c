@@ -13,6 +13,12 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+/**
+ * @brief function pointer to set offsets for bytes and bites
+ *
+ * @param uint32_t index
+ * @param pbm_font fond handler to get the width or height
+ */
 typedef uint32_t (*offsetCalculation)(uint32_t, pbm_font *);
 
 uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font);
@@ -145,13 +151,14 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
 
 pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
                            const char *msg) {
+#define CHARACTER_GAP (2)
   if (NULL == imageHandler || NULL == font || NULL == msg) {
     return PBM_ARGUMENTS;
   }
   uint32_t currentX = x;
   while (*msg != '\0') {
     pbm_writeChar(imageHandler, currentX, y, color, font, *msg++);
-    currentX += font->width + 2;
+    currentX += font->width + CHARACTER_GAP;
   }
 
   return PBM_OK;

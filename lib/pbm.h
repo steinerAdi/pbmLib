@@ -1,7 +1,7 @@
 /**
  * @file pbm.h
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief
+ * @brief PBM (protable bitmap) definitions to handle images with a depth of 1bit (1bit = 1pixel)
  * @version 0.1
  * @date 19-12-2024
  *
