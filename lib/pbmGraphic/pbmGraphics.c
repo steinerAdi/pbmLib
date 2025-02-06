@@ -93,7 +93,7 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
 }
 
 pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
-                         char character) {
+                         uint8_t character) {
   if (NULL == imageHandler || NULL == font) {
     return PBM_ARGUMENTS;
   }
