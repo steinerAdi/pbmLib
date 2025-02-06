@@ -20,6 +20,7 @@
 #include "pbmGraphics.h"
 
 #include "12x20_horizontal_LSB_1.h"
+#include "12x20_horizontal_MSB_1.h"
 #include "6x8_horizontal_MSB_1.h"
 
 #define IMAGE_PATH ("sample.pbm")
@@ -76,14 +77,25 @@ int main(int argc, char const *argv[]) {
   pbm_drawLine(libImage, 0, 0, libImage->width - 1, libImage->height - 1, PBM_WHITE);
   pbm_drawLine(libImage, 0, libImage->height, libImage->width, 0, PBM_WHITE);
 
-  pbm_font font6x8 = {.alignment = libImage->alignment, .fontData = &font_12x20[0][0], .width = 12, .height = 20};
-// for (char i = ' '; i < 'z'; i++) {
-//   pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
-//   yPos += 8;
-// }
+  // pbm_font font6x8 = {.alignment = libImage->alignment, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height = 8};
+  pbm_font font12x20 = {
+      .alignment = libImage->alignment, .fontData = &font_12x20H_MSB[0][0], .width = 12, .height = 20};
+
+  uint32_t xPos = 40;
+  pbm_writeString(libImage, xPos, 1, PBM_WHITE, &font12x20, "USED FONT:");
+  uint32_t yPos = font12x20.height + 1;
+  for (uint16_t i = 0; i <= UINT8_MAX; i++) {
+    printf("Character %d = '%c'\n", i, i);
+    pbm_writeChar(libImage, xPos, yPos, PBM_WHITE, &font12x20, (char)i);
+    yPos += font12x20.height + 1;
+    if ((yPos + font12x20.height) > libImage->height) {
+      yPos = font12x20.height + 1;
+      xPos += font12x20.width + 2;
+    }
+  }
 #define X_POS (12)
-  pbm_writeString(libImage, X_POS, 21, PBM_WHITE, &font6x8, "Hallo Welt");
-  pbm_drawLine(libImage, X_POS, 0, X_POS, 100, PBM_WHITE);
+  // pbm_writeString(libImage, X_POS, 21, PBM_WHITE, &font12x20, "Hello World");
+  // pbm_drawLine(libImage, X_POS, 0, X_POS, 100, PBM_WHITE);
 
   bool running = true;
   SDL_Event event;
