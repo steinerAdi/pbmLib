@@ -19,6 +19,7 @@
 #include "pbm.h"
 #include "pbmGraphics.h"
 
+#include "12x20_horizontal_LSB_1.h"
 #include "6x8_horizontal_MSB_1.h"
 
 #define IMAGE_PATH ("sample.pbm")
@@ -48,13 +49,8 @@ int main(int argc, char const *argv[]) {
 
   atexit(SDL_Quit);
 
-  SDL_Window *window = SDL_CreateWindow(
-    "Image VIEWER",
-    SDL_WINDOWPOS_CENTERED,
-    SDL_WINDOWPOS_CENTERED,
-    imageHandler[IMG_READ].width,
-    imageHandler[IMG_READ].height,
-    SDL_WINDOW_SHOWN);
+  SDL_Window *window = SDL_CreateWindow("Image viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                        imageHandler[IMG_READ].width, imageHandler[IMG_READ].height, SDL_WINDOW_SHOWN);
   if (window == NULL) {
     printf("SDL_CreateWindow: %s\n", SDL_GetError());
     SDL_Quit();
@@ -80,12 +76,12 @@ int main(int argc, char const *argv[]) {
   pbm_drawLine(libImage, 0, 0, libImage->width - 1, libImage->height - 1, PBM_WHITE);
   pbm_drawLine(libImage, 0, libImage->height, libImage->width, 0, PBM_WHITE);
 
-  pbm_font font6x8 = {.alignment = libImage->alignment, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height = 8};
-  // for (char i = ' '; i < 'z'; i++) {
-  //   pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
-  //   yPos += 8;
-  // }
-  #define X_POS (12)
+  pbm_font font6x8 = {.alignment = libImage->alignment, .fontData = &font_12x20[0][0], .width = 12, .height = 20};
+// for (char i = ' '; i < 'z'; i++) {
+//   pbm_writeChar(&imageHandler, 40, yPos, PBM_BLACK, &font6x8, i);
+//   yPos += 8;
+// }
+#define X_POS (12)
   pbm_writeString(libImage, X_POS, 21, PBM_WHITE, &font6x8, "Hallo Welt");
   pbm_drawLine(libImage, X_POS, 0, X_POS, 100, PBM_WHITE);
 
