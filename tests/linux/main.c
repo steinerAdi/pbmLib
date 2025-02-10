@@ -90,7 +90,7 @@ int main(int argc, char const *argv[]) {
   pbm_font font32x53_msb = {
       .alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_32x53H_MSB[0][0], .width = 32, .height = 53};
 
-  pbm_font *usedFont = &font32x53_msb;
+  pbm_font *usedFont = &font12x20_lsb;
   uint32_t xPos = 40;
   char buffer[100] = {};
   snprintf(buffer, 100, "USED FONT: %u x %u", usedFont->width, usedFont->height);
@@ -117,7 +117,7 @@ int main(int argc, char const *argv[]) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_QUIT:
-        pbm_saveImage("saved.pbm", (const pbm_image *)&imageHandler[IMG_LIB]);
+        pbm_saveImage("build/saved.pbm", (const pbm_image *)&imageHandler[IMG_LIB]);
         running = false;
         break;
       case SDL_KEYUP: {

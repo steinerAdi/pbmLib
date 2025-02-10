@@ -1,5 +1,5 @@
 /**
- * @file pbmGrafics.c
+ * @file pbmGraphics.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
  * @brief
  * @version 0.1
@@ -16,15 +16,45 @@
 /**
  * @brief function pointer to set offsets for bytes and bites
  *
- * @param uint32_t index
- * @param pbm_font fond handler to get the width or height
+ * @param uint32_t index the current line index
+ * @param pbm_font font handler to get the width or height
  */
 typedef uint32_t (*offsetCalculation)(uint32_t, pbm_font *);
 
+/**
+ * @brief byte offset calculation for horizontal MSB data
+ *
+ * @param index current horizontal data index
+ * @param font the current used font
+ * @return uint32_t the calculated byte offset
+ */
 uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font);
+
+/**
+ * @brief byte offset calculation for horizontal LSB data
+ *
+ * @param index current horizontal data index
+ * @param font the current used font
+ * @return uint32_t the calculated byte offset
+ */
 uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font);
 
+/**
+ * @brief bit offset calculation for horizontal MSB data
+ *
+ * @param index current horizontal data index
+ * @param font the current used font
+ * @return uint32_t the calculated byte offset
+ */
 uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font);
+
+/**
+ * @brief bit offset calculation for horizontal LSB data
+ *
+ * @param index current horizontal data index
+ * @param font the current used font
+ * @return uint32_t the calculated byte offset
+ */
 uint32_t bitOffset_horizontalLSB(uint32_t index, pbm_font *font);
 
 pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
@@ -128,17 +158,12 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
   }
   // Set horizontal alignment
   // Set the correct size
-  // uint32_t startBytePosition = (y * imageHandler->width + x) / 8;
   uint32_t bytePerLine = (font->width - 1) / 8 + 1;
   uint32_t startFontIndex = (uint32_t)character * font->height * bytePerLine;
-  // uint32_t bitOffsetByte = offsetHorizontalLSB(0, font->width);
   for (uint32_t line = 0; line < font->height; line++) {
     for (uint32_t i = 0; i < font->width; i++) {
-      // uint32_t currentByte = startFontIndex + line * bytePerLine + (font->width - 1 - i) / 8; // For MSB
       uint32_t currentByte = startFontIndex + line * bytePerLine + byteOffset(i, font);
-      // uint32_t currentBit = (0x1 << (font->width - 1 - i) % 8); // For MSB
       uint32_t currentBit = bitOffset(i, font);
-      printf("Byte: %d, bit: %x\n", currentByte, currentBit);
       if (font->fontData[currentByte] & currentBit) {
         pbm_setPixel(imageHandler, x + i, y + line, color);
       } else {
