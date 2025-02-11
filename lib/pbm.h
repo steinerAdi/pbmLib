@@ -31,10 +31,11 @@ typedef enum {
 } pbm_colors;
 
 typedef enum {
-  PBM_OK = 0,    ///< No errors
-  PBM_ERROR,     ///< Unkown error
-  PBM_ARGUMENTS, ///< Function argument error
-  PBM_SIZE       ///< Size out of range
+  PBM_OK = 0,       ///< No errors
+  PBM_ERROR,        ///< Unkown error
+  PBM_ARGUMENTS,    ///< Function argument error
+  PBM_OUT_OF_RANGE, ///< Drawing out of the image
+  PBM_SIZE          ///< Size out of range
 } pbm_return;
 
 typedef struct {

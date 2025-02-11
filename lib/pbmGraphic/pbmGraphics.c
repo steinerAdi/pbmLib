@@ -13,6 +13,8 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#define CHARACTER_GAP (2) ///< Character gap for writing a string
+
 /**
  * @brief function pointer to set offsets for bytes and bites
  *
@@ -73,28 +75,37 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
 }
 
 pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color) {
-  if (imageHandler == NULL || x > imageHandler->width || y > imageHandler->height) {
+  if (imageHandler == NULL) {
     return PBM_ARGUMENTS;
+  }
+  if (x >= imageHandler->width || y >= imageHandler->height) {
+    return PBM_OUT_OF_RANGE;
   }
   uint8_t pattern;
   uint32_t bytePosition;
 
   switch (imageHandler->alignment) {
   case PBM_DATA_HORIZONTAL_MSB:
-    // uint32_t width = x / 8;
     pattern = 0x80 >> (x % 8);
     bytePosition = (y * imageHandler->width + x) / 8;
     break;
+  case PBM_DATA_HORIZONTAL_LSB:
+    pattern = 0x01 << (x % 8);
+    bytePosition = (y * imageHandler->width + x) / 8;
+    break;
+  case PBM_DATA_VERTICAL_MSB:
+    pattern = 0x80 >> (y % 8);
+    bytePosition = y / 8 * imageHandler->width + x;
+    break;
   case PBM_DATA_VERTICAL_LSB:
-    uint32_t height = y / 8;
-    pattern = (y % 8);
-    bytePosition = height * imageHandler->width / 8 + x;
+    pattern = 0x01 << (y % 8);
+    bytePosition = y / 8 * imageHandler->width + x;
     break;
   default:
     return PBM_ERROR;
   }
 
-  if (color) {
+  if (PBM_BLACK == color) {
     imageHandler->data[bytePosition] |= pattern;
   } else {
     imageHandler->data[bytePosition] &= ~pattern;
@@ -176,7 +187,6 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
 
 pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
                            const char *msg) {
-#define CHARACTER_GAP (2)
   if (NULL == imageHandler || NULL == font || NULL == msg) {
     return PBM_ARGUMENTS;
   }
