@@ -83,23 +83,26 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   }
   uint8_t pattern;
   uint32_t bytePosition;
+#define MSB_BIT (0x80)
+#define LSB_BIT (0x01)
+#define BYTE_SIZE (8)
 
   switch (imageHandler->alignment) {
   case PBM_DATA_HORIZONTAL_MSB:
-    pattern = 0x80 >> (x % 8);
-    bytePosition = (y * imageHandler->width + x) / 8;
+    pattern = MSB_BIT >> (x % BYTE_SIZE);
+    bytePosition = (y * imageHandler->width + x) / BYTE_SIZE;
     break;
   case PBM_DATA_HORIZONTAL_LSB:
-    pattern = 0x01 << (x % 8);
-    bytePosition = (y * imageHandler->width + x) / 8;
+    pattern = LSB_BIT << (x % BYTE_SIZE);
+    bytePosition = (y * imageHandler->width + x) / BYTE_SIZE;
     break;
   case PBM_DATA_VERTICAL_MSB:
-    pattern = 0x80 >> (y % 8);
-    bytePosition = y / 8 * imageHandler->width + x;
+    pattern = MSB_BIT >> (y % BYTE_SIZE);
+    bytePosition = y / BYTE_SIZE * imageHandler->width + x;
     break;
   case PBM_DATA_VERTICAL_LSB:
-    pattern = 0x01 << (y % 8);
-    bytePosition = y / 8 * imageHandler->width + x;
+    pattern = LSB_BIT << (y % BYTE_SIZE);
+    bytePosition = y / BYTE_SIZE * imageHandler->width + x;
     break;
   default:
     return PBM_ERROR;
@@ -115,10 +118,14 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
 
 pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
                         pbm_colors color) {
-  if (NULL == imageHandler || xStart > imageHandler->width || xEnd > imageHandler->width ||
-      yStart > imageHandler->height || yEnd > imageHandler->height) {
+  if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
+  if (xStart > imageHandler->width || xEnd > imageHandler->width || yStart > imageHandler->height ||
+      yEnd > imageHandler->height) {
+    return PBM_OUT_OF_RANGE;
+  }
+
   int32_t xDiff = xEnd - xStart;
   int32_t yDiff = yEnd - yStart;
   uint32_t interpolationDuration;
