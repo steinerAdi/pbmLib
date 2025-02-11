@@ -16,7 +16,7 @@
 extern "C" {
 #endif
 
-#include "SDL/SDL.h"
+#include "SDL2/SDL.h"
 #include <stdint.h>
 
 #include "../pbm.h"
@@ -25,7 +25,7 @@ pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler);
 
 pbm_return pbm_saveImage(const char *imagePath, const pbm_image *imageHandler);
 
-pbm_return pbm_displayImage(SDL_Surface *screen, const pbm_image *image);
+pbm_return pbm_displayImage(SDL_Renderer *screen, const pbm_image *image);
 
 #ifdef __cplusplus
 }

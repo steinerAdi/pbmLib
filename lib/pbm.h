@@ -1,7 +1,7 @@
 /**
  * @file pbm.h
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief
+ * @brief PBM (protable bitmap) definitions to handle images with a depth of 1bit (1bit = 1pixel)
  * @version 0.1
  * @date 19-12-2024
  *
@@ -20,6 +20,8 @@ extern "C" {
 
 typedef enum {
   PBM_DATA_HORIZONTAL_MSB = 0, ///< Data bytes are stored in horizontal direction (x direction) with MSB first
+  PBM_DATA_HORIZONTAL_LSB,     ///< Data bytes are stored in horizontal direction (x direction) with LSB
+  PBM_DATA_VERTICAL_MSB,       ///< Data bytes are stored in vertical direction (y direction) with MSB first
   PBM_DATA_VERTICAL_LSB        ///< Data bytes are stored in vertical direction (y direction) with LSB first
 } pbm_data_alignment;
 

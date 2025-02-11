@@ -92,14 +92,10 @@ pbm_return pbm_saveImage(const char *imagePath, const pbm_image *imageHandler) {
   return PBM_OK;
 }
 
-pbm_return pbm_displayImage(SDL_Surface *screen, const pbm_image *image) {
+pbm_return pbm_displayImage(SDL_Renderer *screen, const pbm_image *image) {
   if (NULL == screen || NULL == image) {
     return PBM_ARGUMENTS;
   }
-
-  SDL_FillRect(screen, NULL, SDL_MapRGB(screen->format, 255, 255, 255)); // White background
-
-  // SDL_Surface *image = loadBMP(filename);
 
   for (uint32_t y = 0; y < image->height; y++) {
     for (uint32_t x = 0; x < image->width; x++) {
@@ -109,29 +105,12 @@ pbm_return pbm_displayImage(SDL_Surface *screen, const pbm_image *image) {
       uint8_t pixelColor = (byte & (0x80 >> bitIndex)) ? 0 : 255; // 0 for black, 255 for white
 
       // Draw the pixel (black or white)
+      SDL_SetRenderDrawColor(screen, pixelColor, pixelColor, pixelColor, SDL_ALPHA_OPAQUE);
       SDL_Rect rect = {x, y, 1, 1}; // 1x1 pixel
-      SDL_FillRect(screen, &rect, SDL_MapRGB(screen->format, pixelColor, pixelColor, pixelColor));
+      SDL_RenderFillRect(screen, &rect);
     }
   }
 
-  SDL_Flip(screen);
+  SDL_RenderPresent(screen);
   return PBM_OK;
-}
-
-SDL_Surface *loadBMP(const char *file_name) {
-  SDL_Surface *tmp = SDL_LoadBMP(file_name);
-  SDL_Surface *image = NULL;
-
-  if (tmp) {
-    image = SDL_DisplayFormat(tmp);
-    SDL_FreeSurface(tmp);
-
-    if (!image) {
-      printf("ERROR in converting: %s\n", SDL_GetError());
-    }
-  } else {
-    printf("ERROR: image(%s) could not load: %s", file_name, SDL_GetError());
-  }
-
-  return image;
 }

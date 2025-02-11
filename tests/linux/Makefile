@@ -28,9 +28,9 @@ GRAPHICS_PATH = $(LIB_PATH)/pbmGraphic
 # C sources
 C_SOURCES =  \
 $(wildcard *.c) \
-$(wildcard $(LIB_PATH)/*.c) \
-$(wildcard $(IO_PATH)/*.c) \
+ $(wildcard $(LIB_PATH)/*.c) \
 $(wildcard $(GRAPHICS_PATH)/*.c) \
+$(wildcard $(IO_PATH)/*.c) \
 
 ######################################
 # Compiler
@@ -51,7 +51,7 @@ C_INC = \
 -I$(GRAPHICS_PATH)
 
 #C Libs
-C_LIBS = $$(sdl-config --cflags --libs)
+C_LIBS = -lSDL2 -lm #$$(sdl-config --cflags --libs)
 
 CFLAGS = $(C_ARG) $(C_DEFS) $(C_INC)
 
@@ -74,7 +74,7 @@ $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(C_LIBS)
 
 run: $(BUILD_DIR)/$(TARGET)
-	$(BUILD_DIR)/$(TARGET)
+	@$(BUILD_DIR)/$(TARGET)
 
 clean:
 	rm -rf $(BUILD_DIR)
