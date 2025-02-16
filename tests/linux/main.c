@@ -112,7 +112,7 @@ int main(int argc, char const *argv[]) {
   bool running = true;
   SDL_Event event;
   enum registeredImages currentImage = IMG_LIB;
-  pbm_displayImage(renderer, &imageHandler[currentImage]);
+  pbm_renderImage(renderer, &imageHandler[currentImage]);
   SDL_RenderPresent(renderer);
   while (running) {
     while (SDL_PollEvent(&event)) {
@@ -125,7 +125,7 @@ int main(int argc, char const *argv[]) {
         switch (event.key.keysym.sym) {
         case SDLK_RIGHT:
           currentImage = (currentImage + 1) % IMG_MAX;
-          pbm_displayImage(renderer, &imageHandler[currentImage]);
+          pbm_renderImage(renderer, &imageHandler[currentImage]);
           SDL_RenderPresent(renderer);
           break;
         default:

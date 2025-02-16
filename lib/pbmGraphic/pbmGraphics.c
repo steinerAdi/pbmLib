@@ -1,7 +1,7 @@
 /**
  * @file pbmGraphics.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief
+ * @brief Graphic library to set in an PBM image pixels, lines and writing to it.
  * @version 0.1
  * @date 19-12-2024
  *
@@ -116,8 +116,7 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   return PBM_OK;
 }
 
-pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
-                        pbm_colors color) {
+pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd, pbm_colors color) {
   if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
@@ -154,8 +153,7 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   return PBM_OK;
 }
 
-pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
-                         uint8_t character) {
+pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, uint8_t character) {
   if (NULL == imageHandler || NULL == font) {
     return PBM_ARGUMENTS;
   }
@@ -192,8 +190,7 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
   return PBM_OK;
 }
 
-pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
-                           const char *msg) {
+pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, const char *msg) {
   if (NULL == imageHandler || NULL == font || NULL == msg) {
     return PBM_ARGUMENTS;
   }
@@ -206,10 +203,16 @@ pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_
   return PBM_OK;
 }
 
-uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font) { return (font->width - 1 - index) / 8; }
-uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font) { return ((index + 8 - (font->width % 8)) / 8); }
+uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font) {
+  return (font->width - 1 - index) / 8;
+}
+uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font) {
+  return ((index + 8 - (font->width % 8)) / 8);
+}
 
-uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font) { return (0x1 << (font->width - 1 - index) % 8); }
+uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font) {
+  return (0x1 << (font->width - 1 - index) % 8);
+}
 uint32_t bitOffset_horizontalLSB(uint32_t index, pbm_font *font) {
   return (0x1 << (index + 8 - (font->width % 8)) % 8);
 }
