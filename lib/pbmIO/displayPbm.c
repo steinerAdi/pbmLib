@@ -41,7 +41,7 @@ pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler) {
   }
   ungetc(c, file);
 
-  if (fscanf(file, "%d %d", &(imageHandler->width), &(imageHandler->height)) != 2) {
+  if (fscanf(file, "%u %u", &(imageHandler->width), &(imageHandler->height)) != 2) {
     printf("Error reading image size\n");
     fclose(file);
     return PBM_ERROR;
@@ -111,6 +111,5 @@ pbm_return pbm_displayImage(SDL_Renderer *screen, const pbm_image *image) {
     }
   }
 
-  SDL_RenderPresent(screen);
   return PBM_OK;
 }

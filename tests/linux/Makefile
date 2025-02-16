@@ -39,7 +39,7 @@ $(wildcard $(IO_PATH)/*.c) \
 CC = gcc
 
 # Arguments
-C_ARG = -Wall -Wextra 
+C_ARG = -Wall -Wextra -Wpedantic
 
 # C Defines
 C_DEFS = 

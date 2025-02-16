@@ -19,7 +19,7 @@ extern "C" {
 #include "../pbm.h"
 
 typedef struct {
-  const char *fontData;
+  const unsigned char *fontData;
   uint8_t width;
   uint8_t height;
   pbm_data_alignment alignment;
