@@ -59,8 +59,11 @@ int main(int argc, char const *argv[]) {
 
   pbm_image imageHandler[IMG_MAX];
   if (pbm_loadImage(filePath, &imageHandler[IMG_READ])) {
+    printf("Error: Loading image %s\n", filePath);
     return EXIT_FAILURE;
   }
+
+  printf("Load image with size: %d x %d\n", imageHandler[IMG_READ].width, imageHandler[IMG_READ].height);
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     printf("SDL_Init Error: %s\n", SDL_GetError());
@@ -121,7 +124,7 @@ int main(int argc, char const *argv[]) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_QUIT:
-        pbm_saveImage("build/saved.pbm", (const pbm_image *)&imageHandler[IMG_FONT]);
+        pbm_saveImage("build/saved.pbm", (const pbm_image *)&imageHandler[currentImage]);
         running = false;
         break;
       case SDL_KEYUP: {
@@ -154,7 +157,7 @@ void drawFontImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   uint32_t xPos = 40;
   char buffer[100] = {0};
   snprintf(buffer, 100, "USED FONT: %u x %u", usedFont->width, usedFont->height);
-  pbm_writeString(imageHandler, xPos, 1, PBM_WHITE, usedFont, PBM_STRING_TOP_LEFT, buffer);
+  pbm_writeString(imageHandler, xPos, 1, PBM_WHITE, usedFont, PBM_STRING_LEFT_TOP, buffer);
   uint32_t yPos = usedFont->height + 1;
   for (uint16_t i = 0; i <= 255; i++) {
     // printf("Character %d = '%c'\n", i, i);
@@ -168,5 +171,15 @@ void drawFontImage(pbm_image *imageHandler, const pbm_font *usedFont) {
 }
 
 void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
-  pbm_writeString(imageHandler, imageHandler->width / 2, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_CENTER_CENTER, "CENTER");
+  // Draw border
+  pbm_drawLine(imageHandler, 0, 0, imageHandler->width, 0, PBM_BLACK);
+  pbm_writeString(imageHandler, 0, 0, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, "LEFT TOP");
+  pbm_writeString(imageHandler, imageHandler->width / 2, 0, PBM_BLACK, usedFont, PBM_STRING_CENTER_TOP, "CENTER TOP");
+  pbm_writeString(imageHandler, imageHandler->width, 0, PBM_BLACK, usedFont, PBM_STRING_RIGHT_TOP, "RIGHT TOP");
+  pbm_writeString(imageHandler, 0, imageHandler->height / 2, PBM_BLACK, usedFont, PBM_STRING_LEFT_CENTER, "LEFT CENTER");
+  pbm_writeString(imageHandler, imageHandler->width / 2, imageHandler->height / 2, PBM_BLACK, usedFont, PBM_STRING_CENTER_CENTER, "CENTER CENTER");
+  pbm_writeString(imageHandler, imageHandler->width, imageHandler->height / 2, PBM_BLACK, usedFont, PBM_STRING_RIGHT_CENTER, "RIGHT CENTER");
+  pbm_writeString(imageHandler, 0, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_LEFT_BOTTOM, "LEFT BOTTOM");
+  pbm_writeString(imageHandler, imageHandler->width / 2, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_CENTER_BOTTOM, "CENTER BOTTOM");
+  pbm_writeString(imageHandler, imageHandler->width, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_RIGHT_BOTTOM, "RIGHT BOTTOM");
 }

@@ -217,19 +217,19 @@ pbm_return pbm_writeString(
   uint32_t yOffset;
 
   switch (textAlignment) {
-  case PBM_STRING_TOP_LEFT:
-  case PBM_STRING_CENTER_LEFT:
-  case PBM_STRING_BOTTOM_LEFT:
+  case PBM_STRING_LEFT_TOP:
+  case PBM_STRING_LEFT_CENTER:
+  case PBM_STRING_LEFT_BOTTOM:
     xOffset = 0;
     break;
-  case PBM_STRING_TOP_CENTER:
+  case PBM_STRING_CENTER_TOP:
   case PBM_STRING_CENTER_CENTER:
-  case PBM_STRING_BOTTOM_CENTER:
+  case PBM_STRING_CENTER_BOTTOM:
     xOffset = msgBitLen / 2;
     break;
-  case PBM_STRING_TOP_RIGHT:
-  case PBM_STRING_CENTER_RIGHT:
-  case PBM_STRING_BOTTOM_RIGHT:
+  case PBM_STRING_RIGHT_TOP:
+  case PBM_STRING_RIGHT_CENTER:
+  case PBM_STRING_RIGHT_BOTTOM:
     xOffset = msgBitLen;
     break;
   default:
@@ -238,27 +238,30 @@ pbm_return pbm_writeString(
   }
 
   switch (textAlignment) {
-  case PBM_STRING_TOP_LEFT:
-  case PBM_STRING_TOP_CENTER:
-  case PBM_STRING_TOP_RIGHT:
+  case PBM_STRING_LEFT_TOP:
+  case PBM_STRING_CENTER_TOP:
+  case PBM_STRING_RIGHT_TOP:
     yOffset = 0;
     break;
-  case PBM_STRING_CENTER_LEFT:
+  case PBM_STRING_LEFT_CENTER:
   case PBM_STRING_CENTER_CENTER:
-  case PBM_STRING_CENTER_RIGHT:
+  case PBM_STRING_RIGHT_CENTER:
     yOffset = font->height / 2;
     break;
-  case PBM_STRING_BOTTOM_LEFT:
-  case PBM_STRING_BOTTOM_CENTER:
-  case PBM_STRING_BOTTOM_RIGHT:
+  case PBM_STRING_LEFT_BOTTOM:
+  case PBM_STRING_CENTER_BOTTOM:
+  case PBM_STRING_RIGHT_BOTTOM:
     yOffset = font->height;
     break;
   default:
     yOffset = 0;
     break;
   }
+
   uint32_t currentX = x - xOffset;
   uint32_t currentY = y - yOffset;
+  printf("Calculated position %u / %u \t", currentX, currentY);
+  printf("Corresponding data, %lu => %lu\n", stringLen, msgBitLen);
 
   while (*msg != '\0') {
     pbm_writeChar(imageHandler, currentX, currentY, color, font, *msg++);
