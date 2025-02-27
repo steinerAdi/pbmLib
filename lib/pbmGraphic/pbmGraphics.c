@@ -1,7 +1,7 @@
 /**
  * @file pbmGraphics.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief
+ * @brief Graphic library to set in an PBM image pixels, lines and writing to it.
  * @version 0.1
  * @date 19-12-2024
  *
@@ -12,6 +12,8 @@
 #include "pbmGraphics.h"
 #include <stddef.h>
 #include <stdlib.h>
+
+#define CHARACTER_GAP (2) ///< Character gap for writing a string
 
 /**
  * @brief function pointer to set offsets for bytes and bites
@@ -73,28 +75,40 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
 }
 
 pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color) {
-  if (imageHandler == NULL || x > imageHandler->width || y > imageHandler->height) {
+  if (imageHandler == NULL) {
     return PBM_ARGUMENTS;
+  }
+  if (x >= imageHandler->width || y >= imageHandler->height) {
+    return PBM_OUT_OF_RANGE;
   }
   uint8_t pattern;
   uint32_t bytePosition;
+#define MSB_BIT (0x80)
+#define LSB_BIT (0x01)
+#define BYTE_SIZE (8)
 
   switch (imageHandler->alignment) {
   case PBM_DATA_HORIZONTAL_MSB:
-    // uint32_t width = x / 8;
-    pattern = 0x80 >> (x % 8);
-    bytePosition = (y * imageHandler->width + x) / 8;
+    pattern = MSB_BIT >> (x % BYTE_SIZE);
+    bytePosition = (y * imageHandler->width + x) / BYTE_SIZE;
+    break;
+  case PBM_DATA_HORIZONTAL_LSB:
+    pattern = LSB_BIT << (x % BYTE_SIZE);
+    bytePosition = (y * imageHandler->width + x) / BYTE_SIZE;
+    break;
+  case PBM_DATA_VERTICAL_MSB:
+    pattern = MSB_BIT >> (y % BYTE_SIZE);
+    bytePosition = y / BYTE_SIZE * imageHandler->width + x;
     break;
   case PBM_DATA_VERTICAL_LSB:
-    uint32_t height = y / 8;
-    pattern = (y % 8);
-    bytePosition = height * imageHandler->width / 8 + x;
+    pattern = LSB_BIT << (y % BYTE_SIZE);
+    bytePosition = y / BYTE_SIZE * imageHandler->width + x;
     break;
   default:
     return PBM_ERROR;
   }
 
-  if (color) {
+  if (PBM_BLACK == color) {
     imageHandler->data[bytePosition] |= pattern;
   } else {
     imageHandler->data[bytePosition] &= ~pattern;
@@ -102,12 +116,15 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   return PBM_OK;
 }
 
-pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
-                        pbm_colors color) {
-  if (NULL == imageHandler || xStart > imageHandler->width || xEnd > imageHandler->width ||
-      yStart > imageHandler->height || yEnd > imageHandler->height) {
+pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd, pbm_colors color) {
+  if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
+  if (xStart > imageHandler->width || xEnd > imageHandler->width || yStart > imageHandler->height ||
+      yEnd > imageHandler->height) {
+    return PBM_OUT_OF_RANGE;
+  }
+
   int32_t xDiff = xEnd - xStart;
   int32_t yDiff = yEnd - yStart;
   uint32_t interpolationDuration;
@@ -136,8 +153,7 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   return PBM_OK;
 }
 
-pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
-                         uint8_t character) {
+pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, uint8_t character) {
   if (NULL == imageHandler || NULL == font) {
     return PBM_ARGUMENTS;
   }
@@ -174,9 +190,7 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
   return PBM_OK;
 }
 
-pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font,
-                           const char *msg) {
-#define CHARACTER_GAP (2)
+pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, const char *msg) {
   if (NULL == imageHandler || NULL == font || NULL == msg) {
     return PBM_ARGUMENTS;
   }
@@ -189,10 +203,16 @@ pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_
   return PBM_OK;
 }
 
-uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font) { return (font->width - 1 - index) / 8; }
-uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font) { return ((index + 8 - (font->width % 8)) / 8); }
+uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font) {
+  return (font->width - 1 - index) / 8;
+}
+uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font) {
+  return ((index + 8 - (font->width % 8)) / 8);
+}
 
-uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font) { return (0x1 << (font->width - 1 - index) % 8); }
+uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font) {
+  return (0x1 << (font->width - 1 - index) % 8);
+}
 uint32_t bitOffset_horizontalLSB(uint32_t index, pbm_font *font) {
   return (0x1 << (index + 8 - (font->width % 8)) % 8);
 }

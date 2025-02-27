@@ -30,7 +30,9 @@
 #define WINDOW_WIDTH (800)
 #define WINDOW_HEIGHT (600)
 
-enum registeredImages { IMG_READ, IMG_LIB, IMG_MAX };
+enum registeredImages { IMG_READ,
+  IMG_LIB,
+  IMG_MAX };
 
 int main(int argc, char const *argv[]) {
   const char *filePath;
@@ -53,7 +55,7 @@ int main(int argc, char const *argv[]) {
   atexit(SDL_Quit);
 
   SDL_Window *window = SDL_CreateWindow("Image viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                        imageHandler[IMG_READ].width, imageHandler[IMG_READ].height, SDL_WINDOW_SHOWN);
+      imageHandler[IMG_READ].width, imageHandler[IMG_READ].height, SDL_WINDOW_SHOWN);
   if (window == NULL) {
     printf("SDL_CreateWindow: %s\n", SDL_GetError());
     SDL_Quit();
@@ -92,7 +94,7 @@ int main(int argc, char const *argv[]) {
 
   pbm_font *usedFont = &font12x20_lsb;
   uint32_t xPos = 40;
-  char buffer[100] = {};
+  char buffer[100] = {0};
   snprintf(buffer, 100, "USED FONT: %u x %u", usedFont->width, usedFont->height);
   pbm_writeString(libImage, xPos, 1, PBM_WHITE, usedFont, buffer);
   uint32_t yPos = usedFont->height + 1;
@@ -106,13 +108,12 @@ int main(int argc, char const *argv[]) {
     }
   }
 #define X_POS (12)
-  // pbm_writeString(libImage, X_POS, 21, PBM_WHITE, &font12x20, "Hello World");
-  // pbm_drawLine(libImage, X_POS, 0, X_POS, 100, PBM_WHITE);
 
   bool running = true;
   SDL_Event event;
   enum registeredImages currentImage = IMG_LIB;
-  pbm_displayImage(renderer, &imageHandler[currentImage]);
+  pbm_renderImage(renderer, &imageHandler[currentImage]);
+  SDL_RenderPresent(renderer);
   while (running) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -124,7 +125,8 @@ int main(int argc, char const *argv[]) {
         switch (event.key.keysym.sym) {
         case SDLK_RIGHT:
           currentImage = (currentImage + 1) % IMG_MAX;
-          pbm_displayImage(renderer, &imageHandler[currentImage]);
+          pbm_renderImage(renderer, &imageHandler[currentImage]);
+          SDL_RenderPresent(renderer);
           break;
         default:
           break;

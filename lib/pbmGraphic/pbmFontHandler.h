@@ -18,11 +18,15 @@ extern "C" {
 
 #include "../pbm.h"
 
+/**
+ * @brief PBM font handler
+ *
+ */
 typedef struct {
-  const char *fontData;
-  uint8_t width;
-  uint8_t height;
-  pbm_data_alignment alignment;
+  const unsigned char *fontData; ///< Font structure represented in bytes
+  uint8_t width;                 ///< Font width
+  uint8_t height;                ///< Font height
+  pbm_data_alignment alignment;  ///< Data alignment of the the font structure
 } pbm_font;
 
 #ifdef __cplusplus

@@ -1,7 +1,7 @@
 /**
  * @file displayPbm.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief
+ * @brief Load, save and render a PBM image
  * @version 0.1
  * @date 18-12-2024
  *
@@ -41,7 +41,7 @@ pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler) {
   }
   ungetc(c, file);
 
-  if (fscanf(file, "%d %d", &(imageHandler->width), &(imageHandler->height)) != 2) {
+  if (fscanf(file, "%u %u", &(imageHandler->width), &(imageHandler->height)) != 2) {
     printf("Error reading image size\n");
     fclose(file);
     return PBM_ERROR;
@@ -92,7 +92,7 @@ pbm_return pbm_saveImage(const char *imagePath, const pbm_image *imageHandler) {
   return PBM_OK;
 }
 
-pbm_return pbm_displayImage(SDL_Renderer *screen, const pbm_image *image) {
+pbm_return pbm_renderImage(SDL_Renderer *screen, const pbm_image *image) {
   if (NULL == screen || NULL == image) {
     return PBM_ARGUMENTS;
   }
@@ -111,6 +111,5 @@ pbm_return pbm_displayImage(SDL_Renderer *screen, const pbm_image *image) {
     }
   }
 
-  SDL_RenderPresent(screen);
   return PBM_OK;
 }
