@@ -96,7 +96,7 @@ int main(int argc, char const *argv[]) {
   uint32_t xPos = 40;
   char buffer[100] = {0};
   snprintf(buffer, 100, "USED FONT: %u x %u", usedFont->width, usedFont->height);
-  pbm_writeString(libImage, xPos, 1, PBM_WHITE, usedFont, buffer);
+  pbm_writeString(libImage, xPos, 1, PBM_WHITE, usedFont, PBM_STRING_TOP_LEFT, buffer);
   uint32_t yPos = usedFont->height + 1;
   for (uint16_t i = 0; i <= 255; i++) {
     // printf("Character %d = '%c'\n", i, i);
