@@ -10,10 +10,12 @@
  */
 
 #include "pbmGraphics.h"
+
 #include <stddef.h>
 #include <stdlib.h>
+#include <string.h>
 
-#define CHARACTER_GAP (2) ///< Character gap for writing a string
+#define CHARACTER_GAP (1) ///< Character gap for writing a string
 
 /**
  * @brief function pointer to set offsets for bytes and bites
@@ -21,7 +23,7 @@
  * @param uint32_t index the current line index
  * @param pbm_font font handler to get the width or height
  */
-typedef uint32_t (*offsetCalculation)(uint32_t, pbm_font *);
+typedef uint32_t (*offsetCalculation)(uint32_t, const pbm_font *);
 
 /**
  * @brief byte offset calculation for horizontal MSB data
@@ -30,7 +32,7 @@ typedef uint32_t (*offsetCalculation)(uint32_t, pbm_font *);
  * @param font the current used font
  * @return uint32_t the calculated byte offset
  */
-uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font);
+uint32_t byteOffset_horizontalMSB(uint32_t index, const pbm_font *font);
 
 /**
  * @brief byte offset calculation for horizontal LSB data
@@ -39,7 +41,7 @@ uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font);
  * @param font the current used font
  * @return uint32_t the calculated byte offset
  */
-uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font);
+uint32_t byteOffset_horizontalLSB(uint32_t index, const pbm_font *font);
 
 /**
  * @brief bit offset calculation for horizontal MSB data
@@ -48,7 +50,7 @@ uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font);
  * @param font the current used font
  * @return uint32_t the calculated byte offset
  */
-uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font);
+uint32_t bitOffset_horizontalMSB(uint32_t index, const pbm_font *font);
 
 /**
  * @brief bit offset calculation for horizontal LSB data
@@ -57,7 +59,7 @@ uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font);
  * @param font the current used font
  * @return uint32_t the calculated byte offset
  */
-uint32_t bitOffset_horizontalLSB(uint32_t index, pbm_font *font);
+uint32_t bitOffset_horizontalLSB(uint32_t index, const pbm_font *font);
 
 pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
   if (NULL == imageHandler) {
@@ -77,6 +79,12 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
 pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color) {
   if (imageHandler == NULL) {
     return PBM_ARGUMENTS;
+  }
+  if (PBM_IMAGE_END == x) {
+    x = imageHandler->width - 1;
+  }
+  if (PBM_IMAGE_END == y) {
+    y = imageHandler->height - 1;
   }
   if (x >= imageHandler->width || y >= imageHandler->height) {
     return PBM_OUT_OF_RANGE;
@@ -120,6 +128,20 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
+  if (PBM_IMAGE_END == xStart) {
+    xStart = imageHandler->width - 1;
+  }
+  if (PBM_IMAGE_END == yStart) {
+    yStart = imageHandler->height - 1;
+  }
+
+  if (PBM_IMAGE_END == xEnd) {
+    xEnd = imageHandler->width - 1;
+  }
+  if (PBM_IMAGE_END == yEnd) {
+    yEnd = imageHandler->height - 1;
+  }
+
   if (xStart > imageHandler->width || xEnd > imageHandler->width || yStart > imageHandler->height ||
       yEnd > imageHandler->height) {
     return PBM_OUT_OF_RANGE;
@@ -153,7 +175,13 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   return PBM_OK;
 }
 
-pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, uint8_t character) {
+pbm_return pbm_writeChar(
+    pbm_image *const imageHandler,
+    const uint32_t x,
+    const uint32_t y,
+    pbm_colors color,
+    const pbm_font *font,
+    const uint8_t character) {
   if (NULL == imageHandler || NULL == font) {
     return PBM_ARGUMENTS;
   }
@@ -190,29 +218,88 @@ pbm_return pbm_writeChar(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_co
   return PBM_OK;
 }
 
-pbm_return pbm_writeString(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color, pbm_font *font, const char *msg) {
+pbm_return pbm_writeString(
+    pbm_image *const imageHandler,
+    const uint32_t x,
+    const uint32_t y,
+    pbm_colors color,
+    const pbm_font *font,
+    pbm_stringAlignment textAlignment,
+    const char *msg) {
   if (NULL == imageHandler || NULL == font || NULL == msg) {
     return PBM_ARGUMENTS;
   }
-  uint32_t currentX = x;
+  uint32_t stringLen = strlen(msg);
+  if (0 == stringLen) {
+    return PBM_ARGUMENTS;
+  }
+  uint32_t msgBitLen = (stringLen - 1) * (font->width + CHARACTER_GAP) + font->width;
+  uint32_t xOffset;
+  uint32_t yOffset;
+
+  switch (textAlignment) {
+  case PBM_STRING_LEFT_TOP:
+  case PBM_STRING_LEFT_CENTER:
+  case PBM_STRING_LEFT_BOTTOM:
+    xOffset = 0;
+    break;
+  case PBM_STRING_CENTER_TOP:
+  case PBM_STRING_CENTER_CENTER:
+  case PBM_STRING_CENTER_BOTTOM:
+    xOffset = msgBitLen / 2;
+    break;
+  case PBM_STRING_RIGHT_TOP:
+  case PBM_STRING_RIGHT_CENTER:
+  case PBM_STRING_RIGHT_BOTTOM:
+    xOffset = msgBitLen;
+    break;
+  default:
+    xOffset = 0;
+    break;
+  }
+
+  switch (textAlignment) {
+  case PBM_STRING_LEFT_TOP:
+  case PBM_STRING_CENTER_TOP:
+  case PBM_STRING_RIGHT_TOP:
+    yOffset = 0;
+    break;
+  case PBM_STRING_LEFT_CENTER:
+  case PBM_STRING_CENTER_CENTER:
+  case PBM_STRING_RIGHT_CENTER:
+    yOffset = font->height / 2;
+    break;
+  case PBM_STRING_LEFT_BOTTOM:
+  case PBM_STRING_CENTER_BOTTOM:
+  case PBM_STRING_RIGHT_BOTTOM:
+    yOffset = font->height;
+    break;
+  default:
+    yOffset = 0;
+    break;
+  }
+
+  uint32_t currentX = ((x == PBM_IMAGE_END) ? imageHandler->width : x) - xOffset;
+  uint32_t currentY = ((y == PBM_IMAGE_END) ? imageHandler->height : y) - yOffset;
+
   while (*msg != '\0') {
-    pbm_writeChar(imageHandler, currentX, y, color, font, *msg++);
+    pbm_writeChar(imageHandler, currentX, currentY, color, font, *msg++);
     currentX += font->width + CHARACTER_GAP;
   }
 
   return PBM_OK;
 }
 
-uint32_t byteOffset_horizontalMSB(uint32_t index, pbm_font *font) {
+uint32_t byteOffset_horizontalMSB(uint32_t index, const pbm_font *font) {
   return (font->width - 1 - index) / 8;
 }
-uint32_t byteOffset_horizontalLSB(uint32_t index, pbm_font *font) {
+uint32_t byteOffset_horizontalLSB(uint32_t index, const pbm_font *font) {
   return ((index + 8 - (font->width % 8)) / 8);
 }
 
-uint32_t bitOffset_horizontalMSB(uint32_t index, pbm_font *font) {
+uint32_t bitOffset_horizontalMSB(uint32_t index, const pbm_font *font) {
   return (0x1 << (font->width - 1 - index) % 8);
 }
-uint32_t bitOffset_horizontalLSB(uint32_t index, pbm_font *font) {
+uint32_t bitOffset_horizontalLSB(uint32_t index, const pbm_font *font) {
   return (0x1 << (index + 8 - (font->width % 8)) % 8);
 }
