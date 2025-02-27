@@ -1,15 +1,13 @@
 /**
  * @file main.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief
+ * @brief Test application for pbm library for graphic and IO functions
  * @version 0.1
  * @date 18-12-2024
  *
  * @copyright Copyright (c) 2024
  *
  */
-
-#undef PBM_USE_IO
 
 #include "SDL2/SDL.h"
 #include <stdbool.h>
@@ -101,9 +99,7 @@ int main(int argc, char const *argv[]) {
   pbm_image *fontImage = &imageHandler[IMG_FONT];
   pbm_image *alignmentImage = &imageHandler[IMG_ALIGNMENT];
 
-  pbm_fill(fontImage, PBM_BLACK);
-  pbm_drawLine(fontImage, 0, 0, fontImage->width - 1, fontImage->height - 1, PBM_WHITE);
-  pbm_drawLine(fontImage, 0, fontImage->height, fontImage->width, 0, PBM_WHITE);
+  pbm_fill(fontImage, PBM_WHITE);
 
   pbm_font storedFonts[MAX_FONTS] = {
       [FONT6X8_LSB] = {.alignment = PBM_DATA_HORIZONTAL_LSB, .fontData = &font_6x8H_LSB[0][0], .width = 6, .height = 8},
@@ -134,6 +130,12 @@ int main(int argc, char const *argv[]) {
           pbm_renderImage(renderer, &imageHandler[currentImage]);
           SDL_RenderPresent(renderer);
           break;
+        case SDLK_UP:
+          currentFont = (currentFont + 1) % MAX_FONTS;
+          drawFontImage(fontImage, &storedFonts[currentFont]);
+          drawAlignmentImage(alignmentImage, &storedFonts[currentFont]);
+          pbm_renderImage(renderer, &imageHandler[currentImage]);
+          SDL_RenderPresent(renderer);
         default:
           break;
         }
@@ -154,14 +156,15 @@ int main(int argc, char const *argv[]) {
 }
 
 void drawFontImage(pbm_image *imageHandler, const pbm_font *usedFont) {
-  uint32_t xPos = 40;
+  pbm_fill(imageHandler, PBM_WHITE);
+  uint32_t xPos = 2;
   char buffer[100] = {0};
-  snprintf(buffer, 100, "USED FONT: %u x %u", usedFont->width, usedFont->height);
-  pbm_writeString(imageHandler, xPos, 1, PBM_WHITE, usedFont, PBM_STRING_LEFT_TOP, buffer);
+  snprintf(buffer, 100, "USED FONT: %u x %u Alignment %d", usedFont->width, usedFont->height, usedFont->alignment);
+  pbm_writeString(imageHandler, xPos, 1, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, buffer);
   uint32_t yPos = usedFont->height + 1;
   for (uint16_t i = 0; i <= 255; i++) {
     // printf("Character %d = '%c'\n", i, i);
-    pbm_writeChar(imageHandler, xPos, yPos, PBM_WHITE, usedFont, (char)i);
+    pbm_writeChar(imageHandler, xPos, yPos, PBM_BLACK, usedFont, (char)i);
     yPos += usedFont->height + 1;
     if ((yPos + usedFont->height) > imageHandler->height) {
       yPos = usedFont->height + 1;
@@ -172,7 +175,11 @@ void drawFontImage(pbm_image *imageHandler, const pbm_font *usedFont) {
 
 void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   // Draw border
+  pbm_fill(imageHandler, PBM_WHITE);
   pbm_drawLine(imageHandler, 0, 0, PBM_IMAGE_END, 0, PBM_BLACK);
+  pbm_drawLine(imageHandler, 0, 0, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK);
+  printf("Retval %d", pbm_drawLine(imageHandler, 0, PBM_IMAGE_END, PBM_IMAGE_END, 0, PBM_BLACK));
+
   pbm_writeString(imageHandler, 0, 0, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, "LEFT TOP");
   pbm_writeString(imageHandler, imageHandler->width / 2, 0, PBM_BLACK, usedFont, PBM_STRING_CENTER_TOP, "CENTER TOP");
   pbm_writeString(imageHandler, PBM_IMAGE_END, 0, PBM_BLACK, usedFont, PBM_STRING_RIGHT_TOP, "RIGHT TOP");

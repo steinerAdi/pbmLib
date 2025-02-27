@@ -128,11 +128,6 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
-  if (xStart > imageHandler->width || xEnd > imageHandler->width || yStart > imageHandler->height ||
-      yEnd > imageHandler->height) {
-    return PBM_OUT_OF_RANGE;
-  }
-
   if (PBM_IMAGE_END == xStart) {
     xStart = imageHandler->width - 1;
   }
@@ -145,6 +140,11 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   }
   if (PBM_IMAGE_END == yEnd) {
     yEnd = imageHandler->height - 1;
+  }
+
+  if (xStart > imageHandler->width || xEnd > imageHandler->width || yStart > imageHandler->height ||
+      yEnd > imageHandler->height) {
+    return PBM_OUT_OF_RANGE;
   }
 
   int32_t xDiff = xEnd - xStart;
