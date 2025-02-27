@@ -181,5 +181,5 @@ void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_writeString(imageHandler, imageHandler->width, imageHandler->height / 2, PBM_BLACK, usedFont, PBM_STRING_RIGHT_CENTER, "RIGHT CENTER");
   pbm_writeString(imageHandler, 0, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_LEFT_BOTTOM, "LEFT BOTTOM");
   pbm_writeString(imageHandler, imageHandler->width / 2, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_CENTER_BOTTOM, "CENTER BOTTOM");
-  pbm_writeString(imageHandler, imageHandler->width, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_RIGHT_BOTTOM, "RIGHT BOTTOM");
+  pbm_writeString(imageHandler, imageHandler->width, imageHandler->height, PBM_BLACK, usedFont, PBM_STRING_RIGHT_BOTTOM, "OgM");
 }

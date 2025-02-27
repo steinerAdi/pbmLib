@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CHARACTER_GAP (2) ///< Character gap for writing a string
+#define CHARACTER_GAP (1) ///< Character gap for writing a string
 
 /**
  * @brief function pointer to set offsets for bytes and bites
@@ -212,7 +212,7 @@ pbm_return pbm_writeString(
   if (0 == stringLen) {
     return PBM_ARGUMENTS;
   }
-  uint32_t msgBitLen = (stringLen - 1) * font->width * CHARACTER_GAP + font->width;
+  uint32_t msgBitLen = (stringLen - 1) * (font->width + CHARACTER_GAP) + font->width;
   uint32_t xOffset;
   uint32_t yOffset;
 
@@ -260,8 +260,6 @@ pbm_return pbm_writeString(
 
   uint32_t currentX = x - xOffset;
   uint32_t currentY = y - yOffset;
-  printf("Calculated position %u / %u \t", currentX, currentY);
-  printf("Corresponding data, %lu => %lu\n", stringLen, msgBitLen);
 
   while (*msg != '\0') {
     pbm_writeChar(imageHandler, currentX, currentY, color, font, *msg++);
