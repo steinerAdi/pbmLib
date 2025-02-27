@@ -10,6 +10,7 @@
  */
 
 #include "pbmGraphics.h"
+
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,6 +80,12 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   if (imageHandler == NULL) {
     return PBM_ARGUMENTS;
   }
+  if (PBM_IMAGE_END == x) {
+    x = imageHandler->width - 1;
+  }
+  if (PBM_IMAGE_END == y) {
+    y = imageHandler->height - 1;
+  }
   if (x >= imageHandler->width || y >= imageHandler->height) {
     return PBM_OUT_OF_RANGE;
   }
@@ -124,6 +131,20 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   if (xStart > imageHandler->width || xEnd > imageHandler->width || yStart > imageHandler->height ||
       yEnd > imageHandler->height) {
     return PBM_OUT_OF_RANGE;
+  }
+
+  if (PBM_IMAGE_END == xStart) {
+    xStart = imageHandler->width - 1;
+  }
+  if (PBM_IMAGE_END == yStart) {
+    yStart = imageHandler->height - 1;
+  }
+
+  if (PBM_IMAGE_END == xEnd) {
+    xEnd = imageHandler->width - 1;
+  }
+  if (PBM_IMAGE_END == yEnd) {
+    yEnd = imageHandler->height - 1;
   }
 
   int32_t xDiff = xEnd - xStart;
@@ -258,8 +279,8 @@ pbm_return pbm_writeString(
     break;
   }
 
-  uint32_t currentX = x - xOffset;
-  uint32_t currentY = y - yOffset;
+  uint32_t currentX = ((x == PBM_IMAGE_END) ? imageHandler->width : x) - xOffset;
+  uint32_t currentY = ((y == PBM_IMAGE_END) ? imageHandler->height : y) - yOffset;
 
   while (*msg != '\0') {
     pbm_writeChar(imageHandler, currentX, currentY, color, font, *msg++);

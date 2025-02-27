@@ -19,6 +19,10 @@ extern "C" {
 #include "../pbm.h"
 #include "pbmFontHandler.h"
 
+#include <stdint.h>
+
+#define PBM_IMAGE_END UINT32_MAX
+
 typedef enum {
   PBM_STRING_LEFT_TOP,
   PBM_STRING_CENTER_TOP,
@@ -83,7 +87,7 @@ pbm_return pbm_drawLine(
  * @param color the desired color
  * @param font the font handler with the bitmapped font, size and orientation
  * @param character the desired character from the font
- * @return pbm_return
+ * @return pbm_return state
  */
 pbm_return pbm_writeChar(
     pbm_image *const imageHandler,
@@ -104,6 +108,7 @@ pbm_return pbm_writeChar(
  * @param y start position on the top left corner in y
  * @param color the desired color
  * @param font the font handler with the bitmapped font, size and orientation
+ * @param textAlignment
  * @param msg the C string to write to the image
  * @return pbm_return state
  */
