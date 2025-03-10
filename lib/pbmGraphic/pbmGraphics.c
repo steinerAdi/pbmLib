@@ -150,27 +150,15 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
   int32_t xDiff = xEnd - xStart;
   int32_t yDiff = yEnd - yStart;
   uint32_t interpolationDuration;
-  double xInterpolation;
-  double yInterpolation;
   if (abs(xDiff) > abs(yDiff)) {
     interpolationDuration = abs(xDiff);
-    if (xDiff > 0) {
-      xInterpolation = 1;
-    } else {
-      xInterpolation = -1;
-    }
-    yInterpolation = (double)yDiff / abs(xDiff);
   } else {
     interpolationDuration = abs(yDiff);
-    xInterpolation = (double)xDiff / abs(yDiff);
-    if (yDiff > 0) {
-      yInterpolation = 1;
-    } else {
-      yInterpolation = -1;
-    }
   }
   for (uint32_t i = 0; i < interpolationDuration; i++) {
-    pbm_setPixel(imageHandler, xStart + xInterpolation * i, yStart + yInterpolation * i, color);
+    int32_t xInterpolation = (xDiff * (int32_t)i) / (int32_t)interpolationDuration;
+    int32_t yInterpolation = (yDiff * (int32_t)i) / (int32_t)interpolationDuration;
+    pbm_setPixel(imageHandler, xStart + xInterpolation, yStart + yInterpolation, color);
   }
   return PBM_OK;
 }
