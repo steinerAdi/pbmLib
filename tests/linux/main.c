@@ -178,7 +178,8 @@ void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_fill(imageHandler, PBM_WHITE);
   pbm_drawLine(imageHandler, 0, 0, PBM_IMAGE_END, 0, PBM_BLACK);
   pbm_drawLine(imageHandler, 0, 0, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK);
-  printf("Retval %d", pbm_drawLine(imageHandler, 0, PBM_IMAGE_END, PBM_IMAGE_END, 0, PBM_BLACK));
+  pbm_drawLine(imageHandler, PBM_IMAGE_END, 0, 0, PBM_IMAGE_END, PBM_BLACK);
+  // printf("Retval %d", pbm_drawLine(imageHandler, 0, PBM_IMAGE_END, PBM_IMAGE_END, 0, PBM_BLACK));
 
   pbm_writeString(imageHandler, 0, 0, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, "LEFT TOP");
   pbm_writeString(imageHandler, imageHandler->width / 2, 0, PBM_BLACK, usedFont, PBM_STRING_CENTER_TOP, "CENTER TOP");
