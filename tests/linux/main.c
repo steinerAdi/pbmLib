@@ -58,6 +58,7 @@ enum fontNames {
 
 void drawFontImage(pbm_image *imageHandler, const pbm_font *usedFont);
 void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont);
+const char *getAlignment(pbm_data_alignment alignment);
 
 int main(int argc, char const *argv[]) {
   const char *filePath;
@@ -128,6 +129,8 @@ int main(int argc, char const *argv[]) {
   enum registeredImages currentImage = IMG_FONT;
   pbm_renderImage(renderer, &imageHandler[currentImage]);
   SDL_RenderPresent(renderer);
+
+  /* Super loop */
   while (running) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -171,7 +174,7 @@ void drawFontImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_fill(imageHandler, PBM_WHITE);
   uint32_t xPos = 2;
   char buffer[100] = {0};
-  snprintf(buffer, 100, "USED FONT: %u x %u Alignment %d", usedFont->width, usedFont->height, usedFont->alignment);
+  snprintf(buffer, 100, "USED FONT: %u x %u %s", usedFont->width, usedFont->height, getAlignment(usedFont->alignment));
   pbm_writeString(imageHandler, xPos, 1, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, buffer);
   uint32_t yPos = usedFont->height + 1;
   for (uint16_t i = 0; i <= 255; i++) {
@@ -192,7 +195,9 @@ void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_drawLine(imageHandler, 0, 0, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK);
   pbm_drawLine(imageHandler, PBM_IMAGE_END, 0, 0, PBM_IMAGE_END, PBM_BLACK);
   // printf("Retval %d", pbm_drawLine(imageHandler, 0, PBM_IMAGE_END, PBM_IMAGE_END, 0, PBM_BLACK));
-
+  char fontInfoBuf[100];
+  snprintf(fontInfoBuf, sizeof(fontInfoBuf), "FONT %dx%d %s", usedFont->width, usedFont->height, getAlignment(usedFont->alignment));
+  pbm_writeString(imageHandler, imageHandler->width / 2, imageHandler->height / 3, PBM_BLACK, usedFont, PBM_STRING_CENTER_CENTER, fontInfoBuf);
   pbm_writeString(imageHandler, 0, 0, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, "LEFT TOP");
   pbm_writeString(imageHandler, imageHandler->width / 2, 0, PBM_BLACK, usedFont, PBM_STRING_CENTER_TOP, "CENTER TOP");
   pbm_writeString(imageHandler, PBM_IMAGE_END, 0, PBM_BLACK, usedFont, PBM_STRING_RIGHT_TOP, "RIGHT TOP");
@@ -202,4 +207,18 @@ void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_writeString(imageHandler, 0, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_LEFT_BOTTOM, "LEFT BOTTOM");
   pbm_writeString(imageHandler, imageHandler->width / 2, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_CENTER_BOTTOM, "CENTER BOTTOM");
   pbm_writeString(imageHandler, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_RIGHT_BOTTOM, "RIGHT BOTTOM");
+}
+
+const char *getAlignment(pbm_data_alignment alignment) {
+  if (alignment >= PBM_DATA_MAX_ALIGNMENTS) {
+    alignment = PBM_DATA_MAX_ALIGNMENTS;
+  }
+
+  static const char *textAlignment[PBM_DATA_MAX_ALIGNMENTS + 1] = {
+      [PBM_DATA_HORIZONTAL_MSB] = "MSB-H",
+      [PBM_DATA_HORIZONTAL_LSB] = "LSB-H",
+      [PBM_DATA_VERTICAL_MSB] = "MSB-V",
+      [PBM_DATA_VERTICAL_LSB] = "LSB-V",
+      [PBM_DATA_MAX_ALIGNMENTS] = "NOT VALID"};
+  return textAlignment[alignment];
 }
