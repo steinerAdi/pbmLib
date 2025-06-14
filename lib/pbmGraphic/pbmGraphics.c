@@ -184,9 +184,9 @@ pbm_return pbm_drawLine(
     return PBM_OUT_OF_RANGE;
   }
 
-  int32_t dx = abs(xEnd - xStart);
+  int32_t dx = abs((int)xEnd - (int)xStart);
   int32_t sx = xStart < xEnd ? 1 : -1;
-  int32_t dy = -abs(yEnd - yStart);
+  int32_t dy = -abs((int)yEnd - (int)yStart);
   int32_t sy = yStart < yEnd ? 1 : -1;
   int32_t err = dx + dy;
   int32_t e2; /* error value e_xy */
@@ -218,7 +218,38 @@ pbm_return pbm_drawCircle(
   if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
-  // Todo with Bresenham's line algorithm
+  // Bresenham's circle algorithm
+  int f = 1 - radius;
+  int ddF_x = 0;
+  int ddF_y = -2 * radius;
+  int x = 0;
+  int y = radius;
+
+  pbm_setPixel(imageHandler, xCenter, yCenter + radius, color);
+  pbm_setPixel(imageHandler, xCenter, yCenter - radius, color);
+  pbm_setPixel(imageHandler, xCenter + radius, yCenter, color);
+  pbm_setPixel(imageHandler, xCenter - radius, yCenter, color);
+
+  while (x < y) {
+    if (f >= 0) {
+      y -= 1;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    x += 1;
+    ddF_x += 2;
+    f += ddF_x + 1;
+
+    pbm_setPixel(imageHandler, xCenter + x, yCenter + y, color);
+    pbm_setPixel(imageHandler, xCenter - x, yCenter + y, color);
+    pbm_setPixel(imageHandler, xCenter + x, yCenter - y, color);
+    pbm_setPixel(imageHandler, xCenter - x, yCenter - y, color);
+    pbm_setPixel(imageHandler, xCenter + y, yCenter + x, color);
+    pbm_setPixel(imageHandler, xCenter - y, yCenter + x, color);
+    pbm_setPixel(imageHandler, xCenter + y, yCenter - x, color);
+    pbm_setPixel(imageHandler, xCenter - y, yCenter - x, color);
+  }
+  return PBM_OK;
 }
 
 pbm_return pbm_writeChar(

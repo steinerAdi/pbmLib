@@ -207,6 +207,9 @@ void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_writeString(imageHandler, 0, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_LEFT_BOTTOM, "LEFT BOTTOM");
   pbm_writeString(imageHandler, imageHandler->width / 2, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_CENTER_BOTTOM, "CENTER BOTTOM");
   pbm_writeString(imageHandler, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_RIGHT_BOTTOM, "RIGHT BOTTOM");
+
+  // Add circle in the image center
+  pbm_drawCircle(imageHandler, imageHandler->width / 2, imageHandler->height / 2, imageHandler->height / 3, PBM_BLACK);
 }
 
 const char *getAlignment(pbm_data_alignment alignment) {
