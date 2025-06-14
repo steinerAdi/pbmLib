@@ -147,6 +147,7 @@ int main(int argc, char const *argv[]) {
           break;
         case SDLK_UP:
           currentFont = (currentFont + 1) % MAX_FONTS;
+          pbm_invertColor(&imageHandler[IMG_READ]);
           drawFontImage(fontImage, &storedFonts[currentFont]);
           drawAlignmentImage(alignmentImage, &storedFonts[currentFont]);
           pbm_renderImage(renderer, &imageHandler[currentImage]);

@@ -95,13 +95,40 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
     imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->height;
     break;
   default:
-    break;
+    return PBM_ERROR;
   }
 
   uint8_t fillValue = UINT8_MAX * (uint8_t)color;
 
   for (uint32_t i = 0; i < imageDataSize; i++) {
     imageHandler->data[i] = fillValue;
+  }
+  return PBM_OK;
+}
+
+pbm_return pbm_invertColor(pbm_image *imageHandler) {
+
+  if (NULL == imageHandler) {
+    return PBM_ARGUMENTS;
+  }
+
+  uint32_t imageDataSize = 0;
+
+  switch (imageHandler->alignment) {
+  case PBM_DATA_VERTICAL_LSB:
+  case PBM_DATA_VERTICAL_MSB:
+    imageDataSize = ((imageHandler->height - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->width;
+    break;
+  case PBM_DATA_HORIZONTAL_LSB:
+  case PBM_DATA_HORIZONTAL_MSB:
+    imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->height;
+    break;
+  default:
+    return PBM_ERROR;
+  }
+
+  for (uint32_t i = 0; i < imageDataSize; i++) {
+    imageHandler->data[i] = ~imageHandler->data[i];
   }
   return PBM_OK;
 }

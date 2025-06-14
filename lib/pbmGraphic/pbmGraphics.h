@@ -63,6 +63,14 @@ typedef enum {
 pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color);
 
 /**
+ * @brief Inverts the color of the image
+ *
+ * @param imageHandler the image handler to invert the color
+ * @return pbm_return state
+ */
+pbm_return pbm_invertColor(pbm_image *imageHandler);
+
+/**
  * @brief set a pixel in the image to the desired color
  *
  * @param imageHandler the image to set a pixel
