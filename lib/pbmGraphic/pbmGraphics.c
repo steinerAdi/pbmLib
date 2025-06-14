@@ -1,11 +1,27 @@
 /**
  * @file pbmGraphics.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief Graphic library to set in an PBM image pixels, lines and writing to it.
- * @version 0.1
- * @date 19-12-2024
+ * @brief Graphic library to set in an PBM image (1 pixel depth image) pixels, lines and writing to it.
  *
- * @copyright Copyright (c) 2024
+ * This lib is used write graphical (pixels, lines) elements and write text in the image.
+ *
+ * @version 0.2
+ * @date 19-12-2024
+ * @date 13-06-2025
+ *
+ * @copyright (C) 2025 Adrian STEINER
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https: //www.gnu.org/licenses/>.
  *
  */
 
@@ -15,7 +31,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define CHARACTER_GAP (1) ///< Character gap for writing a string
+#define CHARACTER_GAP (1)         ///< Character gap for writing a string
+#define IMAGE_BUFFER_BIT_SIZE (8) ///< Image buffer bit size per element
 
 /**
  * @brief function pointer to set offsets for bytes and bites
@@ -62,11 +79,24 @@ uint32_t bitOffset_horizontalMSB(uint32_t index, const pbm_font *font);
 uint32_t bitOffset_horizontalLSB(uint32_t index, const pbm_font *font);
 
 pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
-  if (NULL == imageHandler) {
+  if (NULL == imageHandler || color > PBM_BLACK) {
     return PBM_ARGUMENTS;
   }
 
-  uint32_t imageDataSize = (imageHandler->width * imageHandler->height) / 8;
+  uint32_t imageDataSize = 0;
+
+  switch (imageHandler->alignment) {
+  case PBM_DATA_VERTICAL_LSB:
+  case PBM_DATA_VERTICAL_MSB:
+    imageDataSize = ((imageHandler->height - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->width;
+    break;
+  case PBM_DATA_HORIZONTAL_LSB:
+  case PBM_DATA_HORIZONTAL_MSB:
+    imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->height;
+    break;
+  default:
+    return PBM_ERROR;
+  }
 
   uint8_t fillValue = UINT8_MAX * (uint8_t)color;
 
@@ -76,7 +106,37 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
   return PBM_OK;
 }
 
+pbm_return pbm_invertColor(pbm_image *imageHandler) {
+
+  if (NULL == imageHandler) {
+    return PBM_ARGUMENTS;
+  }
+
+  uint32_t imageDataSize = 0;
+
+  switch (imageHandler->alignment) {
+  case PBM_DATA_VERTICAL_LSB:
+  case PBM_DATA_VERTICAL_MSB:
+    imageDataSize = ((imageHandler->height - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->width;
+    break;
+  case PBM_DATA_HORIZONTAL_LSB:
+  case PBM_DATA_HORIZONTAL_MSB:
+    imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->height;
+    break;
+  default:
+    return PBM_ERROR;
+  }
+
+  for (uint32_t i = 0; i < imageDataSize; i++) {
+    imageHandler->data[i] = ~imageHandler->data[i];
+  }
+  return PBM_OK;
+}
+
 pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color) {
+#define MSB_BIT (0x80)
+#define LSB_BIT (0x01)
+
   if (imageHandler == NULL) {
     return PBM_ARGUMENTS;
   }
@@ -91,26 +151,23 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   }
   uint8_t pattern;
   uint32_t bytePosition;
-#define MSB_BIT (0x80)
-#define LSB_BIT (0x01)
-#define BYTE_SIZE (8)
 
   switch (imageHandler->alignment) {
   case PBM_DATA_HORIZONTAL_MSB:
-    pattern = MSB_BIT >> (x % BYTE_SIZE);
-    bytePosition = (y * imageHandler->width + x) / BYTE_SIZE;
+    pattern = MSB_BIT >> (x % IMAGE_BUFFER_BIT_SIZE);
+    bytePosition = (y * imageHandler->width + x) / IMAGE_BUFFER_BIT_SIZE;
     break;
   case PBM_DATA_HORIZONTAL_LSB:
-    pattern = LSB_BIT << (x % BYTE_SIZE);
-    bytePosition = (y * imageHandler->width + x) / BYTE_SIZE;
+    pattern = LSB_BIT << (x % IMAGE_BUFFER_BIT_SIZE);
+    bytePosition = (y * imageHandler->width + x) / IMAGE_BUFFER_BIT_SIZE;
     break;
   case PBM_DATA_VERTICAL_MSB:
-    pattern = MSB_BIT >> (y % BYTE_SIZE);
-    bytePosition = y / BYTE_SIZE * imageHandler->width + x;
+    pattern = MSB_BIT >> (y % IMAGE_BUFFER_BIT_SIZE);
+    bytePosition = y / IMAGE_BUFFER_BIT_SIZE * imageHandler->width + x;
     break;
   case PBM_DATA_VERTICAL_LSB:
-    pattern = LSB_BIT << (y % BYTE_SIZE);
-    bytePosition = y / BYTE_SIZE * imageHandler->width + x;
+    pattern = LSB_BIT << (y % IMAGE_BUFFER_BIT_SIZE);
+    bytePosition = y / IMAGE_BUFFER_BIT_SIZE * imageHandler->width + x;
     break;
   default:
     return PBM_ERROR;
@@ -124,7 +181,14 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   return PBM_OK;
 }
 
-pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStart, uint32_t xEnd, uint32_t yEnd, pbm_colors color) {
+pbm_return pbm_drawLine(
+    pbm_image *imageHandler,
+    uint32_t xStart,
+    uint32_t yStart,
+    uint32_t xEnd,
+    uint32_t yEnd,
+    pbm_colors color) {
+
   if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
@@ -147,18 +211,70 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart, uint32_t yStar
     return PBM_OUT_OF_RANGE;
   }
 
-  int32_t xDiff = xEnd - xStart;
-  int32_t yDiff = yEnd - yStart;
-  uint32_t interpolationDuration;
-  if (abs(xDiff) > abs(yDiff)) {
-    interpolationDuration = abs(xDiff);
-  } else {
-    interpolationDuration = abs(yDiff);
+  int32_t dx = abs((int)xEnd - (int)xStart);
+  int32_t sx = xStart < xEnd ? 1 : -1;
+  int32_t dy = -abs((int)yEnd - (int)yStart);
+  int32_t sy = yStart < yEnd ? 1 : -1;
+  int32_t err = dx + dy;
+  int32_t e2; /* error value e_xy */
+
+  while (1) {
+    pbm_setPixel(imageHandler, xStart, yStart, color);
+    if (xStart == xEnd && yStart == yEnd) {
+      break;
+    }
+    e2 = 2 * err;
+    if (e2 > dy) {
+      err += dy;
+      xStart += sx;
+    } /* e_xy+e_x > 0 */
+    if (e2 < dx) {
+      err += dx;
+      yStart += sy;
+    } /* e_xy+e_y < 0 */
   }
-  for (uint32_t i = 0; i < interpolationDuration; i++) {
-    int32_t xInterpolation = (xDiff * (int32_t)i) / (int32_t)interpolationDuration;
-    int32_t yInterpolation = (yDiff * (int32_t)i) / (int32_t)interpolationDuration;
-    pbm_setPixel(imageHandler, xStart + xInterpolation, yStart + yInterpolation, color);
+  return PBM_OK;
+}
+
+pbm_return pbm_drawCircle(
+    pbm_image *imageHandler,
+    uint32_t xCenter,
+    uint32_t yCenter,
+    uint32_t radius,
+    pbm_colors color) {
+  if (NULL == imageHandler) {
+    return PBM_ARGUMENTS;
+  }
+  // Bresenham's circle algorithm
+  int f = 1 - radius;
+  int ddF_x = 0;
+  int ddF_y = -2 * radius;
+  int x = 0;
+  int y = radius;
+
+  pbm_setPixel(imageHandler, xCenter, yCenter + radius, color);
+  pbm_setPixel(imageHandler, xCenter, yCenter - radius, color);
+  pbm_setPixel(imageHandler, xCenter + radius, yCenter, color);
+  pbm_setPixel(imageHandler, xCenter - radius, yCenter, color);
+
+  while (x < y) {
+    if (f >= 0) {
+      y -= 1;
+      ddF_y += 2;
+      f += ddF_y;
+    }
+    x += 1;
+    ddF_x += 2;
+    f += ddF_x + 1;
+
+    pbm_setPixel(imageHandler, xCenter + x, yCenter + y, color);
+    pbm_setPixel(imageHandler, xCenter - x, yCenter + y, color);
+    pbm_setPixel(imageHandler, xCenter + x, yCenter - y, color);
+    pbm_setPixel(imageHandler, xCenter - x, yCenter - y, color);
+    pbm_setPixel(imageHandler, xCenter + y, yCenter + x, color);
+    pbm_setPixel(imageHandler, xCenter - y, yCenter + x, color);
+    pbm_setPixel(imageHandler, xCenter + y, yCenter - x, color);
+    pbm_setPixel(imageHandler, xCenter - y, yCenter - x, color);
   }
   return PBM_OK;
 }
@@ -170,6 +286,7 @@ pbm_return pbm_writeChar(
     pbm_colors color,
     const pbm_font *font,
     const uint8_t character) {
+
   if (NULL == imageHandler || NULL == font) {
     return PBM_ARGUMENTS;
   }
@@ -190,7 +307,7 @@ pbm_return pbm_writeChar(
   }
   // Set horizontal alignment
   // Set the correct size
-  uint32_t bytePerLine = (font->width - 1) / 8 + 1;
+  uint32_t bytePerLine = (font->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1;
   uint32_t startFontIndex = (uint32_t)character * font->height * bytePerLine;
   for (uint32_t line = 0; line < font->height; line++) {
     for (uint32_t i = 0; i < font->width; i++) {
@@ -278,16 +395,18 @@ pbm_return pbm_writeString(
   return PBM_OK;
 }
 
+// Byte offsets calculations
 uint32_t byteOffset_horizontalMSB(uint32_t index, const pbm_font *font) {
-  return (font->width - 1 - index) / 8;
+  return (font->width - 1 - index) / IMAGE_BUFFER_BIT_SIZE;
 }
 uint32_t byteOffset_horizontalLSB(uint32_t index, const pbm_font *font) {
-  return ((index + 8 - (font->width % 8)) / 8);
+  return ((index + IMAGE_BUFFER_BIT_SIZE - (font->width % IMAGE_BUFFER_BIT_SIZE)) / IMAGE_BUFFER_BIT_SIZE);
 }
 
+// Bit offset calculations
 uint32_t bitOffset_horizontalMSB(uint32_t index, const pbm_font *font) {
-  return (0x1 << (font->width - 1 - index) % 8);
+  return (0x1 << (font->width - 1 - index) % IMAGE_BUFFER_BIT_SIZE);
 }
 uint32_t bitOffset_horizontalLSB(uint32_t index, const pbm_font *font) {
-  return (0x1 << (index + 8 - (font->width % 8)) % 8);
+  return (0x1 << (index + IMAGE_BUFFER_BIT_SIZE - (font->width % IMAGE_BUFFER_BIT_SIZE)) % IMAGE_BUFFER_BIT_SIZE);
 }
