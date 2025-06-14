@@ -184,20 +184,41 @@ pbm_return pbm_drawLine(
     return PBM_OUT_OF_RANGE;
   }
 
-  int32_t xDiff = xEnd - xStart;
-  int32_t yDiff = yEnd - yStart;
-  uint32_t interpolationDuration;
-  if (abs(xDiff) > abs(yDiff)) {
-    interpolationDuration = abs(xDiff);
-  } else {
-    interpolationDuration = abs(yDiff);
-  }
-  for (uint32_t i = 0; i < interpolationDuration; i++) {
-    int32_t xInterpolation = (xDiff * (int32_t)i) / (int32_t)interpolationDuration;
-    int32_t yInterpolation = (yDiff * (int32_t)i) / (int32_t)interpolationDuration;
-    pbm_setPixel(imageHandler, xStart + xInterpolation, yStart + yInterpolation, color);
+  int32_t dx = abs(xEnd - xStart);
+  int32_t sx = xStart < xEnd ? 1 : -1;
+  int32_t dy = -abs(yEnd - yStart);
+  int32_t sy = yStart < yEnd ? 1 : -1;
+  int32_t err = dx + dy;
+  int32_t e2; /* error value e_xy */
+
+  while (1) {
+    pbm_setPixel(imageHandler, xStart, yStart, color);
+    if (xStart == xEnd && yStart == yEnd) {
+      break;
+    }
+    e2 = 2 * err;
+    if (e2 > dy) {
+      err += dy;
+      xStart += sx;
+    } /* e_xy+e_x > 0 */
+    if (e2 < dx) {
+      err += dx;
+      yStart += sy;
+    } /* e_xy+e_y < 0 */
   }
   return PBM_OK;
+}
+
+pbm_return pbm_drawCircle(
+    pbm_image *imageHandler,
+    uint32_t xCenter,
+    uint32_t yCenter,
+    uint32_t radius,
+    pbm_colors color) {
+  if (NULL == imageHandler) {
+    return PBM_ARGUMENTS;
+  }
+  // Todo with Bresenham's line algorithm
 }
 
 pbm_return pbm_writeChar(

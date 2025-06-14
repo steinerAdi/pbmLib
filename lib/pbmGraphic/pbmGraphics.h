@@ -97,6 +97,23 @@ pbm_return pbm_drawLine(
     pbm_colors color);
 
 /**
+ * @brief draw a circle in the image
+ *
+ * @param imageHandler the image to draw a line
+ * @param xStart center point in x (horizontal)
+ * @param yStart center point in y (vertical)
+ * @param radius the radius of the circle in pixel
+ * @param color the desired color
+ * @return pbm_return state
+ */
+pbm_return pbm_drawCircle(
+    pbm_image *imageHandler,
+    uint32_t xCenter,
+    uint32_t yCenter,
+    uint32_t radius,
+    pbm_colors color);
+
+/**
  * @brief Write a character with the given font into the image
  *
  * @param imageHandler the image to write a character
