@@ -216,13 +216,13 @@ pbm_return pbm_drawLine(
   int32_t dy = -abs((int)yEnd - (int)yStart);
   int32_t sy = yStart < yEnd ? 1 : -1;
   int32_t err = dx + dy;
-  int32_t e2; /* error value e_xy */
 
   while (1) {
     pbm_setPixel(imageHandler, xStart, yStart, color);
     if (xStart == xEnd && yStart == yEnd) {
       break;
     }
+    int32_t e2; /* error value e_xy */
     e2 = 2 * err;
     if (e2 > dy) {
       err += dy;
@@ -246,11 +246,11 @@ pbm_return pbm_drawCircle(
     return PBM_ARGUMENTS;
   }
   // Bresenham's circle algorithm
-  int f = 1 - radius;
-  int ddF_x = 0;
-  int ddF_y = -2 * radius;
-  int x = 0;
-  int y = radius;
+  int64_t f = 1 - radius;
+  int64_t ddF_x = 0;
+  int64_t ddF_y = (int64_t)(-2) * radius;
+  int64_t x = 0;
+  int64_t y = (int64_t)radius;
 
   pbm_setPixel(imageHandler, xCenter, yCenter + radius, color);
   pbm_setPixel(imageHandler, xCenter, yCenter - radius, color);

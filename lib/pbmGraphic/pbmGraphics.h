@@ -39,8 +39,16 @@ extern "C" {
 
 #include <stdint.h>
 
+/**
+ * @brief Macro to define the end border of the image
+ *
+ */
 #define PBM_IMAGE_END UINT32_MAX
 
+/**
+ * @brief Alignment of the string to the given position
+ *
+ */
 typedef enum {
   PBM_STRING_LEFT_TOP,
   PBM_STRING_CENTER_TOP,
