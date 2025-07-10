@@ -89,13 +89,14 @@ pbm_return pbm_saveImage(const char *imagePath, const pbm_image *imageHandler) {
   }
 
   if (0 == imageHandler->width || 0 == imageHandler->height) {
+    fclose(file);
     return PBM_SIZE;
   }
 
   uint32_t imageDataSize = (imageHandler->width * imageHandler->height + 7) / 8;
 
   fprintf(file, "P4\n");
-  fprintf(file, "%d %d\n", imageHandler->width, imageHandler->height);
+  fprintf(file, "%u %u\n", imageHandler->width, imageHandler->height);
   fwrite(imageHandler->data, 1, imageDataSize, file);
   fprintf(file, "\n");
   fclose(file);
