@@ -1,9 +1,11 @@
 /**
  * @file pbmGraphics.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief Graphic library to set in an PBM image (1 pixel depth image) pixels, lines and writing to it.
+ * @brief Graphic library to set in an PBM image (1 pixel depth image) pixels,
+ * lines and writing to it.
  *
- * This lib is used write graphical (pixels, lines) elements and write text in the image.
+ * This lib is used write graphical (pixels, lines) elements and write text in
+ * the image.
  *
  * @version 0.2
  * @date 19-12-2024
@@ -25,7 +27,7 @@
  *
  */
 
-#include "pbmGraphics.h"
+#include "pbm_graphics.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -88,11 +90,13 @@ pbm_return pbm_fill(pbm_image *imageHandler, pbm_colors color) {
   switch (imageHandler->alignment) {
   case PBM_DATA_VERTICAL_LSB:
   case PBM_DATA_VERTICAL_MSB:
-    imageDataSize = ((imageHandler->height - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->width;
+    imageDataSize = ((imageHandler->height - 1) / IMAGE_BUFFER_BIT_SIZE + 1) *
+                    imageHandler->width;
     break;
   case PBM_DATA_HORIZONTAL_LSB:
   case PBM_DATA_HORIZONTAL_MSB:
-    imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->height;
+    imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) *
+                    imageHandler->height;
     break;
   default:
     return PBM_ERROR;
@@ -117,11 +121,13 @@ pbm_return pbm_invertColor(pbm_image *imageHandler) {
   switch (imageHandler->alignment) {
   case PBM_DATA_VERTICAL_LSB:
   case PBM_DATA_VERTICAL_MSB:
-    imageDataSize = ((imageHandler->height - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->width;
+    imageDataSize = ((imageHandler->height - 1) / IMAGE_BUFFER_BIT_SIZE + 1) *
+                    imageHandler->width;
     break;
   case PBM_DATA_HORIZONTAL_LSB:
   case PBM_DATA_HORIZONTAL_MSB:
-    imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) * imageHandler->height;
+    imageDataSize = ((imageHandler->width - 1) / IMAGE_BUFFER_BIT_SIZE + 1) *
+                    imageHandler->height;
     break;
   default:
     return PBM_ERROR;
@@ -133,7 +139,8 @@ pbm_return pbm_invertColor(pbm_image *imageHandler) {
   return PBM_OK;
 }
 
-pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color) {
+pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y,
+                        pbm_colors color) {
 #define MSB_BIT (0x80)
 #define LSB_BIT (0x01)
 
@@ -181,13 +188,9 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_col
   return PBM_OK;
 }
 
-pbm_return pbm_drawLine(
-    pbm_image *imageHandler,
-    uint32_t xStart,
-    uint32_t yStart,
-    uint32_t xEnd,
-    uint32_t yEnd,
-    pbm_colors color) {
+pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart,
+                        uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
+                        pbm_colors color) {
 
   if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
@@ -206,8 +209,8 @@ pbm_return pbm_drawLine(
     yEnd = imageHandler->height - 1;
   }
 
-  if (xStart > imageHandler->width || xEnd > imageHandler->width || yStart > imageHandler->height ||
-      yEnd > imageHandler->height) {
+  if (xStart > imageHandler->width || xEnd > imageHandler->width ||
+      yStart > imageHandler->height || yEnd > imageHandler->height) {
     return PBM_OUT_OF_RANGE;
   }
 
@@ -236,12 +239,8 @@ pbm_return pbm_drawLine(
   return PBM_OK;
 }
 
-pbm_return pbm_drawCircle(
-    pbm_image *imageHandler,
-    uint32_t xCenter,
-    uint32_t yCenter,
-    uint32_t radius,
-    pbm_colors color) {
+pbm_return pbm_drawCircle(pbm_image *imageHandler, uint32_t xCenter,
+                          uint32_t yCenter, uint32_t radius, pbm_colors color) {
   if (NULL == imageHandler) {
     return PBM_ARGUMENTS;
   }
@@ -279,13 +278,9 @@ pbm_return pbm_drawCircle(
   return PBM_OK;
 }
 
-pbm_return pbm_writeChar(
-    pbm_image *const imageHandler,
-    const uint32_t x,
-    const uint32_t y,
-    pbm_colors color,
-    const pbm_font *font,
-    const uint8_t character) {
+pbm_return pbm_writeChar(pbm_image *const imageHandler, const uint32_t x,
+                         const uint32_t y, pbm_colors color,
+                         const pbm_font *font, const uint8_t character) {
 
   if (NULL == imageHandler || NULL == font) {
     return PBM_ARGUMENTS;
@@ -311,7 +306,8 @@ pbm_return pbm_writeChar(
   uint32_t startFontIndex = (uint32_t)character * font->height * bytePerLine;
   for (uint32_t line = 0; line < font->height; line++) {
     for (uint32_t i = 0; i < font->width; i++) {
-      uint32_t currentByte = startFontIndex + line * bytePerLine + byteOffset(i, font);
+      uint32_t currentByte =
+          startFontIndex + line * bytePerLine + byteOffset(i, font);
       uint32_t currentBit = bitOffset(i, font);
       if (font->fontData[currentByte] & currentBit) {
         pbm_setPixel(imageHandler, x + i, y + line, color);
@@ -323,14 +319,10 @@ pbm_return pbm_writeChar(
   return PBM_OK;
 }
 
-pbm_return pbm_writeString(
-    pbm_image *const imageHandler,
-    const uint32_t x,
-    const uint32_t y,
-    pbm_colors color,
-    const pbm_font *font,
-    pbm_stringAlignment textAlignment,
-    const char *msg) {
+pbm_return pbm_writeString(pbm_image *const imageHandler, const uint32_t x,
+                           const uint32_t y, pbm_colors color,
+                           const pbm_font *font,
+                           pbm_stringAlignment textAlignment, const char *msg) {
   if (NULL == imageHandler || NULL == font || NULL == msg) {
     return PBM_ARGUMENTS;
   }
@@ -338,7 +330,8 @@ pbm_return pbm_writeString(
   if (0 == stringLen) {
     return PBM_ARGUMENTS;
   }
-  uint32_t msgBitLen = (stringLen - 1) * (font->width + CHARACTER_GAP) + font->width;
+  uint32_t msgBitLen =
+      (stringLen - 1) * (font->width + CHARACTER_GAP) + font->width;
   uint32_t xOffset;
   uint32_t yOffset;
 
@@ -384,8 +377,10 @@ pbm_return pbm_writeString(
     break;
   }
 
-  uint32_t currentX = ((x == PBM_IMAGE_END) ? imageHandler->width : x) - xOffset;
-  uint32_t currentY = ((y == PBM_IMAGE_END) ? imageHandler->height : y) - yOffset;
+  uint32_t currentX =
+      ((x == PBM_IMAGE_END) ? imageHandler->width : x) - xOffset;
+  uint32_t currentY =
+      ((y == PBM_IMAGE_END) ? imageHandler->height : y) - yOffset;
 
   while (*msg != '\0') {
     pbm_writeChar(imageHandler, currentX, currentY, color, font, *msg++);
@@ -400,7 +395,9 @@ uint32_t byteOffset_horizontalMSB(uint32_t index, const pbm_font *font) {
   return (font->width - 1 - index) / IMAGE_BUFFER_BIT_SIZE;
 }
 uint32_t byteOffset_horizontalLSB(uint32_t index, const pbm_font *font) {
-  return ((index + IMAGE_BUFFER_BIT_SIZE - (font->width % IMAGE_BUFFER_BIT_SIZE)) / IMAGE_BUFFER_BIT_SIZE);
+  return (
+      (index + IMAGE_BUFFER_BIT_SIZE - (font->width % IMAGE_BUFFER_BIT_SIZE)) /
+      IMAGE_BUFFER_BIT_SIZE);
 }
 
 // Bit offset calculations
@@ -408,5 +405,7 @@ uint32_t bitOffset_horizontalMSB(uint32_t index, const pbm_font *font) {
   return (0x1 << (font->width - 1 - index) % IMAGE_BUFFER_BIT_SIZE);
 }
 uint32_t bitOffset_horizontalLSB(uint32_t index, const pbm_font *font) {
-  return (0x1 << (index + IMAGE_BUFFER_BIT_SIZE - (font->width % IMAGE_BUFFER_BIT_SIZE)) % IMAGE_BUFFER_BIT_SIZE);
+  return (0x1 << (index + IMAGE_BUFFER_BIT_SIZE -
+                  (font->width % IMAGE_BUFFER_BIT_SIZE)) %
+                     IMAGE_BUFFER_BIT_SIZE);
 }

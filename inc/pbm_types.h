@@ -9,8 +9,8 @@
  *
  */
 
-#ifndef PBM_H
-#define PBM_H
+#ifndef PBM_TYPES_H
+#define PBM_TYPES_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,4 +50,4 @@ typedef struct {
 }
 #endif
 
-#endif /*PBM_H*/
+#endif /*PBMTYPES_H*/

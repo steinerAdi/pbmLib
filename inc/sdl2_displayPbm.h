@@ -21,17 +21,17 @@
  *
  */
 
-#ifndef DISPLAY_PBM_H
-#define DISPLAY_PBM_H
+#ifndef SDL2_DISPLAY_PBM_H
+#define SDL2_DISPLAY_PBM_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 #include <stdint.h>
 
-#include "../pbm.h"
+#include "pbm_types.h"
 
 /**
  * @brief Load an PBM P4 image from the path
@@ -66,4 +66,4 @@ pbm_return pbm_renderImage(SDL_Renderer *screen, const pbm_image *image);
 }
 #endif
 
-#endif /*DISPLAY_PBM_H*/
+#endif /* SDL2_DISPLAY_PBM_H */

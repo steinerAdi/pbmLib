@@ -1,7 +1,7 @@
 ######################################
 # target
 ######################################
-TARGET = testLinux
+TARGET = test-$(HOST_ARCH)
 
 ######################################
 # building variables
@@ -16,25 +16,22 @@ OPT = -Og
 #######################################
 # Build path
 BUILD_DIR = build
-#Library Path
-LIB_PATH = ../../lib
-IO_PATH = $(LIB_PATH)/pbmIO
-GRAPHICS_PATH = $(LIB_PATH)/pbmGraphic
 
+TOP_PATH = ../..
 
 ######################################
 # source
 ######################################
 # C sources
 C_SOURCES =  \
-$(wildcard *.c) \
- $(wildcard $(LIB_PATH)/*.c) \
-$(wildcard $(GRAPHICS_PATH)/*.c) \
-$(wildcard $(IO_PATH)/*.c) \
+$(TOP_PATH)/src/pbm_graphics.c \
+$(TOP_PATH)/src/sdl2_displayPbm.c \
+$(wildcard *.c) 
 
 ######################################
 # Compiler
 ######################################
+HOST_ARCH := $(shell arch)
 # C compiler
 CC = gcc
 
@@ -46,9 +43,8 @@ C_DEFS =
 
 # C Includes
 C_INC = \
--I$(LIB_PATH) \
--I$(IO_PATH) \
--I$(GRAPHICS_PATH)
+-I$(TOP_PATH)/inc \
+-Ifonts
 
 #C Libs
 C_LIBS = -lSDL2 -lm #$$(sdl-config --cflags --libs)
@@ -68,7 +64,7 @@ all: $(C_SOURCES) $(OBJECTS) $(BUILD_DIR)/$(TARGET)
 
 $(BUILD_DIR)/%.o: %.c
 	$(_DIR_GUARD)
-	$(CC) $(CFLAGS) -c $< -o $@ $(C_LIBS) 
+	$(CC) $(CFLAGS) -c $< -o $@ 
 
 $(BUILD_DIR)/$(TARGET): $(OBJECTS)
 	$(CC) $(CFLAGS) $(OBJECTS) -o $@ $(C_LIBS)

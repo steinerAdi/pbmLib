@@ -27,7 +27,7 @@
 extern "C" {
 #endif
 
-#include "../pbm.h"
+#include "pbm_types.h"
 
 /**
  * @brief PBM font handler

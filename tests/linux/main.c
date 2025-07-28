@@ -21,31 +21,26 @@
  *
  */
 
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "displayPbm.h"
-#include "pbm.h"
-#include "pbmGraphics.h"
+#include "pbm_graphics.h"
+#include "pbm_types.h"
+#include "sdl2_displayPbm.h"
 
-#include "12x20_horizontal_LSB_1.h"
-#include "12x20_horizontal_MSB_1.h"
-#include "32x53_horizontal_MSB_1.h"
-#include "6x8_horizontal_LSB_1.h"
-#include "6x8_horizontal_MSB_1.h"
+#include "fonts/12x20_horizontal_LSB.h"
+#include "fonts/12x20_horizontal_MSB.h"
+#include "fonts/32x53_horizontal_MSB.h"
+#include "fonts/6x8_horizontal_LSB.h"
+#include "fonts/6x8_horizontal_MSB.h"
 
 #define IMAGE_PATH ("sample.pbm")
 
 #define WINDOW_WIDTH (800)
 #define WINDOW_HEIGHT (600)
 
-enum registeredImages {
-  IMG_READ,
-  IMG_FONT,
-  IMG_ALIGNMENT,
-  IMG_MAX
-};
+enum registeredImages { IMG_READ, IMG_FONT, IMG_ALIGNMENT, IMG_MAX };
 
 enum fontNames {
   FONT6X8_LSB,
@@ -74,7 +69,8 @@ int main(int argc, char const *argv[]) {
     return EXIT_FAILURE;
   }
 
-  printf("Load image with size: %d x %d\n", imageHandler[IMG_READ].width, imageHandler[IMG_READ].height);
+  printf("Load image with size: %d x %d\n", imageHandler[IMG_READ].width,
+         imageHandler[IMG_READ].height);
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     printf("SDL_Init Error: %s\n", SDL_GetError());
@@ -83,15 +79,18 @@ int main(int argc, char const *argv[]) {
 
   atexit(SDL_Quit);
 
-  SDL_Window *window = SDL_CreateWindow("Image viewer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-      imageHandler[IMG_READ].width, imageHandler[IMG_READ].height, SDL_WINDOW_SHOWN);
+  SDL_Window *window =
+      SDL_CreateWindow("Image viewer", SDL_WINDOWPOS_CENTERED,
+                       SDL_WINDOWPOS_CENTERED, imageHandler[IMG_READ].width,
+                       imageHandler[IMG_READ].height, SDL_WINDOW_SHOWN);
   if (window == NULL) {
     printf("SDL_CreateWindow: %s\n", SDL_GetError());
     SDL_Quit();
     return EXIT_FAILURE;
   }
 
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  SDL_Renderer *renderer = SDL_CreateRenderer(
+      window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (renderer == NULL) {
     printf("SDL_CreateRenderer: %s\n", SDL_GetError());
     SDL_DestroyWindow(window);
@@ -102,12 +101,15 @@ int main(int argc, char const *argv[]) {
   imageHandler[IMG_FONT].alignment = imageHandler[IMG_READ].alignment;
   imageHandler[IMG_FONT].width = imageHandler[IMG_READ].width;
   imageHandler[IMG_FONT].height = imageHandler[IMG_READ].height;
-  imageHandler[IMG_FONT].data = (uint8_t *)malloc(imageHandler[IMG_FONT].width * imageHandler[IMG_FONT].height / 8);
+  imageHandler[IMG_FONT].data = (uint8_t *)malloc(
+      imageHandler[IMG_FONT].width * imageHandler[IMG_FONT].height / 8);
 
   imageHandler[IMG_ALIGNMENT].alignment = imageHandler[IMG_READ].alignment;
   imageHandler[IMG_ALIGNMENT].width = imageHandler[IMG_READ].width;
   imageHandler[IMG_ALIGNMENT].height = imageHandler[IMG_READ].height;
-  imageHandler[IMG_ALIGNMENT].data = (uint8_t *)malloc(imageHandler[IMG_ALIGNMENT].width * imageHandler[IMG_ALIGNMENT].height / 8);
+  imageHandler[IMG_ALIGNMENT].data =
+      (uint8_t *)malloc(imageHandler[IMG_ALIGNMENT].width *
+                        imageHandler[IMG_ALIGNMENT].height / 8);
 
   pbm_image *fontImage = &imageHandler[IMG_FONT];
   pbm_image *alignmentImage = &imageHandler[IMG_ALIGNMENT];
@@ -115,11 +117,26 @@ int main(int argc, char const *argv[]) {
   pbm_fill(fontImage, PBM_WHITE);
 
   pbm_font storedFonts[MAX_FONTS] = {
-      [FONT6X8_LSB] = {.alignment = PBM_DATA_HORIZONTAL_LSB, .fontData = &font_6x8H_LSB[0][0], .width = 6, .height = 8},
-      [FONT6X8_MSB] = {.alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_6x8H_MSB[0][0], .width = 6, .height = 8},
-      [FONT12X20_LSB] = {.alignment = PBM_DATA_HORIZONTAL_LSB, .fontData = &font_12x20H_LSB[0][0], .width = 12, .height = 20},
-      [FONT12X20_MSB] = {.alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_12x20H_MSB[0][0], .width = 12, .height = 20},
-      [FONT32X53_MSB] = {.alignment = PBM_DATA_HORIZONTAL_MSB, .fontData = &font_32x53H_MSB[0][0], .width = 32, .height = 53}};
+      [FONT6X8_LSB] = {.alignment = PBM_DATA_HORIZONTAL_LSB,
+                       .fontData = &font_6x8H_LSB[0][0],
+                       .width = 6,
+                       .height = 8},
+      [FONT6X8_MSB] = {.alignment = PBM_DATA_HORIZONTAL_MSB,
+                       .fontData = &font_6x8H_MSB[0][0],
+                       .width = 6,
+                       .height = 8},
+      [FONT12X20_LSB] = {.alignment = PBM_DATA_HORIZONTAL_LSB,
+                         .fontData = &font_12x20H_LSB[0][0],
+                         .width = 12,
+                         .height = 20},
+      [FONT12X20_MSB] = {.alignment = PBM_DATA_HORIZONTAL_MSB,
+                         .fontData = &font_12x20H_MSB[0][0],
+                         .width = 12,
+                         .height = 20},
+      [FONT32X53_MSB] = {.alignment = PBM_DATA_HORIZONTAL_MSB,
+                         .fontData = &font_32x53H_MSB[0][0],
+                         .width = 32,
+                         .height = 53}};
 
   enum fontNames currentFont = FONT6X8_LSB;
   drawFontImage(fontImage, &storedFonts[currentFont]);
@@ -135,7 +152,8 @@ int main(int argc, char const *argv[]) {
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
       case SDL_QUIT:
-        pbm_saveImage("build/saved.pbm", (const pbm_image *)&imageHandler[currentImage]);
+        pbm_saveImage("build/saved.pbm",
+                      (const pbm_image *)&imageHandler[currentImage]);
         running = false;
         break;
       case SDL_KEYUP: {
@@ -175,8 +193,10 @@ void drawFontImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_fill(imageHandler, PBM_WHITE);
   uint32_t xPos = 2;
   char buffer[100] = {0};
-  snprintf(buffer, 100, "USED FONT: %u x %u %s", usedFont->width, usedFont->height, getAlignment(usedFont->alignment));
-  pbm_writeString(imageHandler, xPos, 1, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, buffer);
+  snprintf(buffer, 100, "USED FONT: %u x %u %s", usedFont->width,
+           usedFont->height, getAlignment(usedFont->alignment));
+  pbm_writeString(imageHandler, xPos, 1, PBM_BLACK, usedFont,
+                  PBM_STRING_LEFT_TOP, buffer);
   uint32_t yPos = usedFont->height + 1;
   for (uint16_t i = 0; i <= 255; i++) {
     // printf("Character %d = '%c'\n", i, i);
@@ -195,22 +215,38 @@ void drawAlignmentImage(pbm_image *imageHandler, const pbm_font *usedFont) {
   pbm_drawLine(imageHandler, 0, 0, PBM_IMAGE_END, 0, PBM_BLACK);
   pbm_drawLine(imageHandler, 0, 0, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK);
   pbm_drawLine(imageHandler, PBM_IMAGE_END, 0, 0, PBM_IMAGE_END, PBM_BLACK);
-  // printf("Retval %d", pbm_drawLine(imageHandler, 0, PBM_IMAGE_END, PBM_IMAGE_END, 0, PBM_BLACK));
+  // printf("Retval %d", pbm_drawLine(imageHandler, 0, PBM_IMAGE_END,
+  // PBM_IMAGE_END, 0, PBM_BLACK));
   char fontInfoBuf[100];
-  snprintf(fontInfoBuf, sizeof(fontInfoBuf), "FONT %dx%d %s", usedFont->width, usedFont->height, getAlignment(usedFont->alignment));
-  pbm_writeString(imageHandler, imageHandler->width / 2, imageHandler->height / 3, PBM_BLACK, usedFont, PBM_STRING_CENTER_CENTER, fontInfoBuf);
-  pbm_writeString(imageHandler, 0, 0, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP, "LEFT TOP");
-  pbm_writeString(imageHandler, imageHandler->width / 2, 0, PBM_BLACK, usedFont, PBM_STRING_CENTER_TOP, "CENTER TOP");
-  pbm_writeString(imageHandler, PBM_IMAGE_END, 0, PBM_BLACK, usedFont, PBM_STRING_RIGHT_TOP, "RIGHT TOP");
-  pbm_writeString(imageHandler, 0, imageHandler->height / 2, PBM_BLACK, usedFont, PBM_STRING_LEFT_CENTER, "LEFT CENTER");
-  pbm_writeString(imageHandler, imageHandler->width / 2, imageHandler->height / 2, PBM_BLACK, usedFont, PBM_STRING_CENTER_CENTER, "CENTER CENTER");
-  pbm_writeString(imageHandler, PBM_IMAGE_END, imageHandler->height / 2, PBM_BLACK, usedFont, PBM_STRING_RIGHT_CENTER, "RIGHT CENTER");
-  pbm_writeString(imageHandler, 0, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_LEFT_BOTTOM, "LEFT BOTTOM");
-  pbm_writeString(imageHandler, imageHandler->width / 2, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_CENTER_BOTTOM, "CENTER BOTTOM");
-  pbm_writeString(imageHandler, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK, usedFont, PBM_STRING_RIGHT_BOTTOM, "RIGHT BOTTOM");
+  snprintf(fontInfoBuf, sizeof(fontInfoBuf), "FONT %dx%d %s", usedFont->width,
+           usedFont->height, getAlignment(usedFont->alignment));
+  pbm_writeString(imageHandler, imageHandler->width / 2,
+                  imageHandler->height / 3, PBM_BLACK, usedFont,
+                  PBM_STRING_CENTER_CENTER, fontInfoBuf);
+  pbm_writeString(imageHandler, 0, 0, PBM_BLACK, usedFont, PBM_STRING_LEFT_TOP,
+                  "LEFT TOP");
+  pbm_writeString(imageHandler, imageHandler->width / 2, 0, PBM_BLACK, usedFont,
+                  PBM_STRING_CENTER_TOP, "CENTER TOP");
+  pbm_writeString(imageHandler, PBM_IMAGE_END, 0, PBM_BLACK, usedFont,
+                  PBM_STRING_RIGHT_TOP, "RIGHT TOP");
+  pbm_writeString(imageHandler, 0, imageHandler->height / 2, PBM_BLACK,
+                  usedFont, PBM_STRING_LEFT_CENTER, "LEFT CENTER");
+  pbm_writeString(imageHandler, imageHandler->width / 2,
+                  imageHandler->height / 2, PBM_BLACK, usedFont,
+                  PBM_STRING_CENTER_CENTER, "CENTER CENTER");
+  pbm_writeString(imageHandler, PBM_IMAGE_END, imageHandler->height / 2,
+                  PBM_BLACK, usedFont, PBM_STRING_RIGHT_CENTER, "RIGHT CENTER");
+  pbm_writeString(imageHandler, 0, PBM_IMAGE_END, PBM_BLACK, usedFont,
+                  PBM_STRING_LEFT_BOTTOM, "LEFT BOTTOM");
+  pbm_writeString(imageHandler, imageHandler->width / 2, PBM_IMAGE_END,
+                  PBM_BLACK, usedFont, PBM_STRING_CENTER_BOTTOM,
+                  "CENTER BOTTOM");
+  pbm_writeString(imageHandler, PBM_IMAGE_END, PBM_IMAGE_END, PBM_BLACK,
+                  usedFont, PBM_STRING_RIGHT_BOTTOM, "RIGHT BOTTOM");
 
   // Add circle in the image center
-  pbm_drawCircle(imageHandler, imageHandler->width / 2, imageHandler->height / 2, imageHandler->height / 3, PBM_BLACK);
+  pbm_drawCircle(imageHandler, imageHandler->width / 2,
+                 imageHandler->height / 2, imageHandler->height / 3, PBM_BLACK);
 }
 
 const char *getAlignment(pbm_data_alignment alignment) {

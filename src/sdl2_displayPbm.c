@@ -21,7 +21,7 @@
  *
  */
 
-#include "displayPbm.h"
+#include "sdl2_displayPbm.h"
 
 pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler) {
   FILE *file = fopen(imagePath, "rb");
@@ -37,7 +37,8 @@ pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler) {
     return PBM_ERROR;
   }
   if ('P' != header[0] || '4' != header[1]) {
-    printf("Invalid PBM file format, should be P4 but is %c%c\n", header[0], header[1]);
+    printf("Invalid PBM file format, should be P4 but is %c%c\n", header[0],
+           header[1]);
     fclose(file);
     return PBM_ERROR;
   }
@@ -51,7 +52,8 @@ pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler) {
   }
   ungetc(c, file);
 
-  if (fscanf(file, "%u %u", &(imageHandler->width), &(imageHandler->height)) != 2) {
+  if (fscanf(file, "%u %u", &(imageHandler->width), &(imageHandler->height)) !=
+      2) {
     printf("Error reading image size\n");
     fclose(file);
     return PBM_ERROR;
@@ -113,10 +115,12 @@ pbm_return pbm_renderImage(SDL_Renderer *screen, const pbm_image *image) {
       uint32_t byteIndex = (y * image->width + x) / 8;
       uint32_t bitIndex = (y * image->width + x) % 8;
       uint8_t byte = image->data[byteIndex];
-      uint8_t pixelColor = (byte & (0x80 >> bitIndex)) ? 0 : 255; // 0 for black, 255 for white
+      uint8_t pixelColor =
+          (byte & (0x80 >> bitIndex)) ? 0 : 255; // 0 for black, 255 for white
 
       // Draw the pixel (black or white)
-      SDL_SetRenderDrawColor(screen, pixelColor, pixelColor, pixelColor, SDL_ALPHA_OPAQUE);
+      SDL_SetRenderDrawColor(screen, pixelColor, pixelColor, pixelColor,
+                             SDL_ALPHA_OPAQUE);
       SDL_Rect rect = {x, y, 1, 1}; // 1x1 pixel
       SDL_RenderFillRect(screen, &rect);
     }
