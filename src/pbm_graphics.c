@@ -245,35 +245,37 @@ pbm_return pbm_drawCircle(pbm_image *imageHandler, uint32_t xCenter,
     return PBM_ARGUMENTS;
   }
   // Bresenham's circle algorithm
-  int64_t f = 1 - radius;
-  int64_t ddF_x = 0;
+  int64_t f = (int64_t)1 - radius;
+  int64_t ddF_x = 1;
   int64_t ddF_y = (int64_t)(-2) * radius;
   int64_t x = 0;
   int64_t y = (int64_t)radius;
 
+  // Draw the edgepoints
   pbm_setPixel(imageHandler, xCenter, yCenter + radius, color);
   pbm_setPixel(imageHandler, xCenter, yCenter - radius, color);
   pbm_setPixel(imageHandler, xCenter + radius, yCenter, color);
   pbm_setPixel(imageHandler, xCenter - radius, yCenter, color);
 
-  while (x < y) {
-    if (f >= 0) {
+  // Run algorithm
+  while (x <= y) {
+    if (f >= (int64_t)0) {
       y -= 1;
       ddF_y += 2;
       f += ddF_y;
     }
     x += 1;
     ddF_x += 2;
-    f += ddF_x + 1;
+    f += ddF_x;
 
-    pbm_setPixel(imageHandler, xCenter + x, yCenter + y, color);
-    pbm_setPixel(imageHandler, xCenter - x, yCenter + y, color);
-    pbm_setPixel(imageHandler, xCenter + x, yCenter - y, color);
-    pbm_setPixel(imageHandler, xCenter - x, yCenter - y, color);
-    pbm_setPixel(imageHandler, xCenter + y, yCenter + x, color);
-    pbm_setPixel(imageHandler, xCenter - y, yCenter + x, color);
-    pbm_setPixel(imageHandler, xCenter + y, yCenter - x, color);
-    pbm_setPixel(imageHandler, xCenter - y, yCenter - x, color);
+    pbm_setPixel(imageHandler, (uint32_t)(xCenter + x), (uint32_t)(yCenter + y), color);
+    pbm_setPixel(imageHandler, (uint32_t)xCenter - x, (uint32_t)yCenter + y, color);
+    pbm_setPixel(imageHandler, (uint32_t)xCenter + x, (uint32_t)yCenter - y, color);
+    pbm_setPixel(imageHandler, (uint32_t)xCenter - x, (uint32_t)yCenter - y, color);
+    pbm_setPixel(imageHandler, (uint32_t)xCenter + y, (uint32_t)yCenter + x, color);
+    pbm_setPixel(imageHandler, (uint32_t)xCenter - y, (uint32_t)yCenter + x, color);
+    pbm_setPixel(imageHandler, (uint32_t)xCenter + y, (uint32_t)yCenter - x, color);
+    pbm_setPixel(imageHandler, (uint32_t)xCenter - y, (uint32_t)yCenter - x, color);
   }
   return PBM_OK;
 }
