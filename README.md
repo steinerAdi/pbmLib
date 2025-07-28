@@ -24,10 +24,10 @@ The fonts for the graphic library are based on bitmap for all characters.
 - pbmIO display based on [SDL2](https://www.libsdl.org/)
 
 ## Getting Started
-The library has the base header file [lib/pbm.h](lib/pbm.h).
+The library has the base header file [inc/pbm_types.h](inc/pbm_types.h).
 This file includes all important structures and defines.
 
-The graphic library header file ``pbmGraphics.h`` is located at [pbmGraphic/pbmGraphics.h](lib/pbmGraphic/pbmGraphics.h).
+The graphic library header file ``pbm_graphics.h`` is located at [inc/pbm_graphics.h](inc/pbm_graphics.h).
 There are all prototypes for writing and drawing graphics to the image.
 The font handler structure is in the same directory.
 
@@ -44,7 +44,7 @@ git submodule add https://github.com/steinerAdi/pbmLib.git
 ```
 
 - IO:
-    - Install SDL2 
+    - Install SDL2
 
     ```
     sudo apt install libsdl2-dev
@@ -60,7 +60,7 @@ A window will be displayed and can be controlled with the ``RIGHT`` and ``UP KEY
 With the right key, the windows switches between three images:
 1. Fonts examples:
 
-    Display the several test fonts (e.g [6x8_horizontal_LSB_1](tests/linux/6x8_horizontal_LSB_1.h))
+    Display the several test fonts (e.g [6x8_horizontal_LSB](tests/linux/fonts/6x8_horizontal_LSB.h))
     With the ``UP KEY``, you can switch through all loaded fonts
 
 1. Graphic demonstration
