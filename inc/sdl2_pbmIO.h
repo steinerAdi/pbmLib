@@ -1,5 +1,5 @@
 /**
- * @file displayPbm.h
+ * @file sdl2_pbmIO.h
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
  * @brief Load, save and render a PBM image
  * @version 0.1
@@ -21,8 +21,8 @@
  *
  */
 
-#ifndef SDL2_DISPLAY_PBM_H
-#define SDL2_DISPLAY_PBM_H
+#ifndef SDL2_PBMIO_H
+#define SDL2_PBMIO_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,4 +66,4 @@ pbm_return pbm_renderImage(SDL_Renderer *screen, const pbm_image *image);
 }
 #endif
 
-#endif /* SDL2_DISPLAY_PBM_H */
+#endif /* SDL2_PBMIO_H */

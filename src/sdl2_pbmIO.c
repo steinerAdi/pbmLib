@@ -1,5 +1,5 @@
 /**
- * @file displayPbm.c
+ * @file sdl2_pbmIO.c
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
  * @brief Load, save and render a PBM image
  * @version 0.1
@@ -21,7 +21,7 @@
  *
  */
 
-#include "sdl2_displayPbm.h"
+#include "sdl2_pbmIO.h"
 
 pbm_return pbm_loadImage(const char *imagePath, pbm_image *imageHandler) {
   FILE *file = fopen(imagePath, "rb");

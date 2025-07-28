@@ -25,7 +25,7 @@ TOP_PATH = ../..
 # C sources
 C_SOURCES =  \
 $(TOP_PATH)/src/pbm_graphics.c \
-$(TOP_PATH)/src/sdl2_displayPbm.c \
+$(TOP_PATH)/src/sdl2_pbmIO.c \
 $(wildcard *.c) 
 
 ######################################

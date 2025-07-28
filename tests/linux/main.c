@@ -27,7 +27,7 @@
 
 #include "pbm_graphics.h"
 #include "pbm_types.h"
-#include "sdl2_displayPbm.h"
+#include "sdl2_pbmIO.h"
 
 #include "fonts/12x20_horizontal_LSB.h"
 #include "fonts/12x20_horizontal_MSB.h"
