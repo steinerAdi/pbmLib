@@ -1,5 +1,5 @@
 /**
- * @file pbmGraphics.h
+ * @file pbm_graphics.h
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
  * @brief Graphic library to set in an PBM image (1 pixel depth image) pixels,
  * lines and writing to it. This header file defines the function prototypes and
@@ -88,8 +88,8 @@ pbm_return pbm_invertColor(pbm_image *imageHandler);
  * @param color the desired color
  * @return pbm_return state
  */
-pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y,
-                        pbm_colors color);
+pbm_return
+pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y, pbm_colors color);
 
 /**
  * @brief draw a line in the image
@@ -102,8 +102,11 @@ pbm_return pbm_setPixel(pbm_image *imageHandler, uint32_t x, uint32_t y,
  * @param color the desired color
  * @return pbm_return state
  */
-pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart,
-                        uint32_t yStart, uint32_t xEnd, uint32_t yEnd,
+pbm_return pbm_drawLine(pbm_image *imageHandler,
+                        uint32_t xStart,
+                        uint32_t yStart,
+                        uint32_t xEnd,
+                        uint32_t yEnd,
                         pbm_colors color);
 
 /**
@@ -116,8 +119,11 @@ pbm_return pbm_drawLine(pbm_image *imageHandler, uint32_t xStart,
  * @param color the desired color
  * @return pbm_return state
  */
-pbm_return pbm_drawCircle(pbm_image *imageHandler, uint32_t xCenter,
-                          uint32_t yCenter, uint32_t radius, pbm_colors color);
+pbm_return pbm_drawCircle(pbm_image *imageHandler,
+                          uint32_t xCenter,
+                          uint32_t yCenter,
+                          uint32_t radius,
+                          pbm_colors color);
 
 /**
  * @brief Write a character with the given font into the image
@@ -130,9 +136,12 @@ pbm_return pbm_drawCircle(pbm_image *imageHandler, uint32_t xCenter,
  * @param character the desired character from the font
  * @return pbm_return state
  */
-pbm_return pbm_writeChar(pbm_image *const imageHandler, const uint32_t x,
-                         const uint32_t y, pbm_colors color,
-                         const pbm_font *font, const uint8_t character);
+pbm_return pbm_writeChar(pbm_image *const imageHandler,
+                         const uint32_t x,
+                         const uint32_t y,
+                         pbm_colors color,
+                         const pbm_font *font,
+                         const uint8_t character);
 
 /**
  * @brief Write a string on one with the given font into the image
@@ -149,10 +158,13 @@ pbm_return pbm_writeChar(pbm_image *const imageHandler, const uint32_t x,
  * @param msg the C string to write to the image
  * @return pbm_return state
  */
-pbm_return pbm_writeString(pbm_image *const imageHandler, const uint32_t x,
-                           const uint32_t y, pbm_colors color,
+pbm_return pbm_writeString(pbm_image *const imageHandler,
+                           const uint32_t x,
+                           const uint32_t y,
+                           pbm_colors color,
                            const pbm_font *font,
-                           pbm_stringAlignment textAlignment, const char *msg);
+                           pbm_stringAlignment textAlignment,
+                           const char *msg);
 
 #ifdef __cplusplus
 }

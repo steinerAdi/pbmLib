@@ -1,5 +1,5 @@
 /**
- * @file pbmFontHandler.h
+ * @file pbm_fontHandler.h
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
  * @brief Handles a font to display it with the necessary data
  * @version 0.1

@@ -1,7 +1,8 @@
 /**
- * @file pbm.h
+ * @file pbm_types.h
  * @author Adrian STEINER (adi.steiner@hotmail.ch)
- * @brief PBM (protable bitmap) definitions to handle images with a depth of 1bit (1bit = 1pixel)
+ * @brief PBM (protable bitmap) definitions to handle images with a depth of
+ * 1bit (1bit = 1pixel)
  * @version 0.1
  * @date 19-12-2024
  *
@@ -18,19 +19,35 @@ extern "C" {
 
 #include <stdint.h>
 
+/**
+ * @brief PBM alignment
+ *
+ */
 typedef enum {
-  PBM_DATA_HORIZONTAL_MSB = 0, ///< Data bytes are stored in horizontal direction (x direction) with MSB first
-  PBM_DATA_HORIZONTAL_LSB,     ///< Data bytes are stored in horizontal direction (x direction) with LSB
-  PBM_DATA_VERTICAL_MSB,       ///< Data bytes are stored in vertical direction (y direction) with MSB first
-  PBM_DATA_VERTICAL_LSB,       ///< Data bytes are stored in vertical direction (y direction) with LSB first
-  PBM_DATA_MAX_ALIGNMENTS      ///< Maximum of possible alignments
+  PBM_DATA_HORIZONTAL_MSB = 0, ///< Data bytes are stored in horizontal
+                               ///< direction (x direction) with MSB first
+  PBM_DATA_HORIZONTAL_LSB, ///< Data bytes are stored in horizontal direction (x
+                           ///< direction) with LSB
+  PBM_DATA_VERTICAL_MSB,   ///< Data bytes are stored in vertical direction (y
+                           ///< direction) with MSB first
+  PBM_DATA_VERTICAL_LSB,   ///< Data bytes are stored in vertical direction (y
+                           ///< direction) with LSB first
+  PBM_DATA_MAX_ALIGNMENTS  ///< Maximum of possible alignments
 } pbm_data_alignment;
 
+/**
+ * @brief PBM colors
+ *
+ */
 typedef enum {
   PBM_WHITE = 0, ///< White color index
   PBM_BLACK = 1  ///< Black color index
 } pbm_colors;
 
+/**
+ * @brief PBM return states
+ *
+ */
 typedef enum {
   PBM_OK = 0,       ///< No errors
   PBM_ERROR,        ///< Unkown error
@@ -39,11 +56,15 @@ typedef enum {
   PBM_SIZE          ///< Size out of range
 } pbm_return;
 
+/**
+ * @brief PBM image handler
+ *
+ */
 typedef struct {
   uint32_t width;               ///< width of the image
   uint32_t height;              ///< height of the image
   pbm_data_alignment alignment; ///< Data bytes alignment
-  uint8_t *data;                ///< Image buffer data with min size of (width*height+7)/8
+  uint8_t *data; ///< Image buffer data with min size of (width*height+7)/8
 } pbm_image;
 
 #ifdef __cplusplus
